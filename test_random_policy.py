@@ -22,7 +22,7 @@ from env.custom_hopper import *
 
 
 def main():
-	env = gym.make('CustomHopper-source-v0', render_mode="rgb_array") #render mode rgb_array to capture frames
+	env_base = gym.make('CustomHopper-source-v0', render_mode="rgb_array") #render mode rgb_array to capture frames
 	# env = gym.make('CustomHopper-target-v0')
 	video_folder = "./videos"
 	# Record every 100 episodes
@@ -34,7 +34,7 @@ def main():
 
 	n_episodes = 500
 	render = True
-	env = RecordVideo(env, video_folder=video_folder, episode_trigger=episode_trigger)
+	env = RecordVideo(env_base, video_folder=video_folder, episode_trigger=episode_trigger)
 
 	for episode in range(n_episodes):
 		done = False
@@ -49,7 +49,7 @@ def main():
 			if render:
 				env.render()
 
-	
+	env.close()
 
 if __name__ == '__main__':
 	main()
