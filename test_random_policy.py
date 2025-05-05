@@ -14,14 +14,19 @@
 """
 import pdb
 
-import gym
+import  gym
+from gym.wrappers import RecordVideo
+
 
 from env.custom_hopper import *
 
 
 def main():
-	env = gym.make('CustomHopper-source-v0')
+	env = gym.make('CustomHopper-source-v0', render_mode="rgb_array") #render mode rgb_array to capture frames
 	# env = gym.make('CustomHopper-target-v0')
+	video_folder = "./videos"
+	# Record every 100 episodes
+	episode_trigger = lambda episode_id: episode_id % 100 == 0
 
 	print('State space:', env.observation_space) # state-space
 	print('Action space:', env.action_space) # action-space
@@ -29,6 +34,7 @@ def main():
 
 	n_episodes = 500
 	render = True
+	env = RecordVideo(env, video_folder=video_folder, episode_trigger=episode_trigger)
 
 	for episode in range(n_episodes):
 		done = False
