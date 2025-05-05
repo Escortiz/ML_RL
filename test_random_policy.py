@@ -22,7 +22,7 @@ from env.custom_hopper import *
 
 
 def main():
-	env_base = gym.make('CustomHopper-source-v0', render_mode="rgb_array") #render mode rgb_array to capture frames
+	env_base = gym.make('CustomHopper-source-v0') #render mode rgb_array to capture frames
 	# env = gym.make('CustomHopper-target-v0')
 	video_folder = "./videos"
 	# Record every 100 episodes
@@ -47,7 +47,7 @@ def main():
 			state, reward, done, info = env.step(action)	# Step the simulator to the next timestep
 
 			if render:
-				env.render()
+				env.render(mode='rgb_array')
 
 	env.close()
 
