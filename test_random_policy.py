@@ -27,6 +27,8 @@ def main():
 	# env = gym.make('CustomHopper-target-v0')
 	video_folder = "./videos_hopper_gym021"
 	os.makedirs(video_folder, exist_ok=True) # Crear carpeta si no existe
+	
+	env_base.metadata['video.frames_per_second'] = 250 # modify fps for Record
 	# Record every 100 episodes
 	episode_trigger = lambda episode_id: episode_id % 100 == 0
 
@@ -36,7 +38,7 @@ def main():
 
 	n_episodes = 500
 	#render = True ## ------not necesary using RecordVideo ----
-	env = RecordVideo(env_base, video_folder=video_folder, episode_trigger=episode_trigger)
+	env = RecordVideo(env_base, video_folder=video_folder, episode_trigger=episode_trigger, fps=250)
 
 	for episode in range(n_episodes):
 		done = False
