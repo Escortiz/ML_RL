@@ -38,7 +38,7 @@ def main():
 
 	n_episodes = 500
 	#render = True ## ------not necesary using RecordVideo ----
-	env = RecordVideo(env_base, video_folder=video_folder, episode_trigger=episode_trigger, fps=250)
+	env = RecordVideo(env_base, video_folder=video_folder, episode_trigger=episode_trigger)
 
 	for episode in range(n_episodes):
 		done = False
