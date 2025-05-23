@@ -59,10 +59,18 @@ def main():
 			agent.store_outcome(previous_state, state, action_probabilities, reward, done)
 
 			train_reward += reward
+
+		#Al finalizar el episodio se actualiza la politica para REINFORCE
+		#loss_value = agent.update_policy()
+
+		# ----- REINFORCE WITH BASELINE 
+		total_loss_val, actor_loss_val, critic_loss_val = agent.update_policy()
 		
 		if (episode+1)%args.print_every == 0:
 			print('Training episode:', episode)
 			print('Episode return:', train_reward)
+			if 'total_loss_val' in locals(): 
+				print(f'Total Loss: {total_loss_val:.4f}, Actor Loss: {actor_loss_val:.4f}, Critic Loss: {critic_loss_val:.4f}')
 
 
 	torch.save(agent.policy.state_dict(), "model.mdl")
