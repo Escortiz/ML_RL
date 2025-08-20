@@ -138,7 +138,14 @@ class Agent(object):
         # Usamos value_preds.detach() para que los gradientes de la pérdida del actor no afecten al crítico.
         advantages = discounted_returns - value_preds.detach() 
     
-        # 4. Calcular la función de pérdida del gradiente de la política ---- SOLO REINFORCE ---- 
+
+          #
+        # TASK 3:
+        #   - compute boostrapped discounted return estimates
+        #   - compute advantage terms
+        #   - compute actor loss and critic loss
+        #   - compute gradients and step the optimizer
+        # 4. Calcular la función de pérdida del gradiente de la política ---- SOLO REINFORCE ----
         # o   Calcular pérdida del actor --- Baseline ------
         # La pérdida es - (sum_t (log_prob(a_t|s_t) * G_t))
         # Queremos maximizar la esperanza de los retornos descontados, por lo que minimizamos el negativo.
@@ -172,18 +179,7 @@ class Agent(object):
         self.optimizer.step() # Actualiza los parámetros de la política
 
         return total_loss.item(), actor_loss.item(), critic_loss.item() # Devuelve el valor de la pérdida (opcional, para logging)
-
-
-
-        #
-        # TASK 3:
-        #   - compute boostrapped discounted return estimates
-        #   - compute advantage terms
-        #   - compute actor loss and critic loss
-        #   - compute gradients and step the optimizer
-        #
-
-        return        
+   
 
 
     def get_action(self, state, evaluation=False):
