@@ -1,0 +1,11 @@
+gym==0.26.2
+stable-baselines3[extra]==1.7.0
+cython<3
+Jinja2==3.1.2
+scipy
+numpy
+patchelf
+# NOTE: Omitimos `mujoco-py` en Colab (suele fallar por compilación/licencia).
+# Instalaremos `mujoco` manualmente si el proyecto lo requiere y es compatible.
+# Instalación de `torch` (y su versión CUDA) conviene hacerla con el comando
+# apropiado para el entorno (Colab): ver COLAB_SETUP.md
