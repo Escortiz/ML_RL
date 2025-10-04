@@ -16,7 +16,7 @@ def parse_args():
     parser.add_argument('--episodes', default=10, type=int, help='Number of test episodes')
 
     # Nuevos argumentos para la grabación de video
-    parser.add_argument('--record-video', default=False, action='store_true', help='Record videos of the episodes')
+    parser.add_argument('--record-video', default=True, action='store_true', help='Record videos of the episodes')
     parser.add_argument('--video-folder', default='./videos_test_agent', type=str, help='Folder to save recorded videos')
     parser.add_argument('--record-every', default=1, type=int, help='Record every N episodes (e.g., 1 to record all, 10 to record every 10th)')
 
@@ -50,6 +50,12 @@ def main():
     # Crear entorno base
     env_base = gym.make('CustomHopper-source-v0')
     # env_base = gym.make('CustomHopper-target-v0') # Si quieres probar en el entorno target
+    video_folder = "./videos_hopper_gym021"
+    os.makedirs(video_folder, exist_ok=True) # Crear carpeta si no existe
+    
+    env_base.metadata['video.frames_per_second'] = 250 # modify  	 for Record
+	# Record every 100 episodes
+    episode_trigger = lambda episode_id: episode_id % 100 == 0
 
     # Configuración para la grabación de video
     if args.record_video:
