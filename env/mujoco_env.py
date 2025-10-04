@@ -9,10 +9,20 @@ from gym.utils import seeding
 import numpy as np
 import gym
 
+_MUJOCO_BACKEND = None
+_HAS_MUJOCO_PY = False
+_HAS_MUJOCO = False
 try:
     import mujoco_py
-except ImportError as e:
-    raise error.DependencyNotInstalled("You need to install mujoco_py (https://mujoco.org/)")
+    _MUJOCO_BACKEND = "mujoco_py"
+    _HAS_MUJOCO_PY = True
+except Exception:
+    try:
+        import mujoco
+        _MUJOCO_BACKEND = "mujoco"
+        _HAS_MUJOCO = True
+    except Exception:
+        raise error.DependencyNotInstalled("You need to install mujoco_py or mujoco (https://mujoco.org/). In Colab prefer 'pip install mujoco' and set MUJOCO_GL=egl, or install mujoco_py locally if needed.")
 
 DEFAULT_SIZE = 500
 
@@ -62,8 +72,29 @@ class MujocoEnv(gym.Env):
         self.seed()
 
     def build_model(self):
-        self.model = mujoco_py.load_model_from_path(os.path.join(os.path.dirname(__file__), "assets/hopper.xml"))
-        self.sim = mujoco_py.MjSim(self.model)
+        xml_path = os.path.join(os.path.dirname(__file__), "assets/hopper.xml")
+        # Backend: mujoco_py (legacy) or mujoco (modern)
+        if _HAS_MUJOCO_PY:
+            self.model = mujoco_py.load_model_from_path(xml_path)
+            self.sim = mujoco_py.MjSim(self.model)
+        else:
+            # Use modern mujoco Python bindings. We implement the minimal set of
+            # operations the environment needs (load model and create sim).
+            # Note: rendering APIs differ between backends; advanced rendering
+            # (MjViewer, offscreen) may be limited here.
+            try:
+                # try both common loader names
+                if hasattr(mujoco, 'load_model_from_path'):
+                    self.model = mujoco.load_model_from_path(xml_path)
+                elif hasattr(mujoco, 'MjModel') and hasattr(mujoco.MjModel, 'from_xml_path'):
+                    self.model = mujoco.MjModel.from_xml_path(xml_path)
+                else:
+                    # fallback to low-level load
+                    self.model = mujoco.MjModel(xml_path)
+                # create sim
+                self.sim = mujoco.MjSim(self.model)
+            except Exception as e:
+                raise error.DependencyNotInstalled(f"Failed to initialize modern 'mujoco' backend: {e}")
         self.viewer = None
         self._viewers = {}
 
@@ -108,20 +139,35 @@ class MujocoEnv(gym.Env):
 
     def set_state(self, qpos, qvel):
         assert qpos.shape == (self.model.nq,) and qvel.shape == (self.model.nv,)
-        old_state = self.sim.get_state()
-        new_state = mujoco_py.MjSimState(old_state.time, qpos, qvel,
-                                         old_state.act, old_state.udd_state)
-        self.sim.set_state(new_state)
-        self.sim.forward()
+        # Different backends expose different state APIs; prefer direct assignment
+        # when using modern 'mujoco'. For mujoco_py we keep the older code.
+        if _HAS_MUJOCO_PY:
+            old_state = self.sim.get_state()
+            new_state = mujoco_py.MjSimState(old_state.time, qpos, qvel,
+                                             old_state.act, old_state.udd_state)
+            self.sim.set_state(new_state)
+            self.sim.forward()
+        else:
+            # Modern mujoco: assign qpos/qvel directly and forward the sim
+            try:
+                self.sim.data.qpos[:] = qpos
+                self.sim.data.qvel[:] = qvel
+                self.sim.forward()
+            except Exception as e:
+                raise RuntimeError(f"Failed to set state on modern mujoco sim: {e}")
 
     @property
     def dt(self):
         return self.model.opt.timestep * self.frame_skip
 
     def do_simulation(self, ctrl, n_frames):
-        self.sim.data.ctrl[:] = ctrl
-        for _ in range(n_frames):
-            self.sim.step()
+        # stepping is similar in both backends
+        try:
+            self.sim.data.ctrl[:] = ctrl
+            for _ in range(n_frames):
+                self.sim.step()
+        except Exception as e:
+            raise RuntimeError(f"Simulation step failed: {e}")
 
     def render(self,
                mode='human',
@@ -167,10 +213,19 @@ class MujocoEnv(gym.Env):
     def _get_viewer(self, mode):
         self.viewer = self._viewers.get(mode)
         if self.viewer is None:
-            if mode == 'human':
-                self.viewer = mujoco_py.MjViewer(self.sim)
-            elif mode == 'rgb_array' or mode == 'depth_array':
-                self.viewer = mujoco_py.MjRenderContextOffscreen(self.sim, -1)
+            if _HAS_MUJOCO_PY:
+                if mode == 'human':
+                    self.viewer = mujoco_py.MjViewer(self.sim)
+                elif mode == 'rgb_array' or mode == 'depth_array':
+                    self.viewer = mujoco_py.MjRenderContextOffscreen(self.sim, -1)
+            else:
+                # Modern mujoco rendering differs; try to provide a helpful error
+                # message. In many Colab/headless setups the modern 'mujoco'
+                # package with MUJOCO_GL=egl can render offscreen, but adapting
+                # the APIs here is non-trivial. If you need rendering in Colab,
+                # prefer installing 'mujoco' + glfw and adjust this wrapper, or
+                # install 'mujoco_py' locally where supported.
+                raise RuntimeError("Rendering with the modern 'mujoco' backend is not fully supported by this wrapper. If you only need to run headless simulations, continue; otherwise install mujoco_py or extend this file to use the modern rendering APIs.")
 
             self.viewer_setup()
             self._viewers[mode] = self.viewer
