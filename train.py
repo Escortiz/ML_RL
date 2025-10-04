@@ -14,6 +14,8 @@ def parse_args():
     parser.add_argument('--n-episodes', default=100000, type=int, help='Number of training episodes')
     parser.add_argument('--print-every', default=20000, type=int, help='Print info every <> episodes')
     parser.add_argument('--device', default='cpu', type=str, help='network device [cpu, cuda]')
+    parser.add_argument('--n-episodes-save', default=1000, type=int, help='Number of episodes to save the model')
+    
 
     return parser.parse_args()
 
@@ -92,6 +94,9 @@ def main():
             if 'total_loss_val' in locals(): 
                 print(f'Total Loss: {total_loss_val:.4f}, Actor Loss: {actor_loss_val:.4f}, Critic Loss: {critic_loss_val:.4f}')
 
+        if (episode+1)%args.n_episodes_save == 0:
+            torch.save(agent.policy.state_dict(), f"model_episode_{episode+1}.mdl")
+            print(f"Model saved at episode {episode+1} as model_episode_{episode+1}.mdl")
     torch.save(agent.policy.state_dict(), "model.mdl")
 
 

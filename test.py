@@ -52,10 +52,11 @@ def main():
     # env_base = gym.make('CustomHopper-target-v0') # Si quieres probar en el entorno target
     video_folder = "./videos_hopper_gym021"
     os.makedirs(video_folder, exist_ok=True) # Crear carpeta si no existe
-    
-    env_base.metadata['video.frames_per_second'] = 250 # modify  	 for Record
-	# Record every 100 episodes
-    episode_trigger = lambda episode_id: episode_id % 100 == 0
+
+    print('State space:', env_base.observation_space) # state-space
+    print('Action space:', env_base.action_space) # action-space
+    print('Dynamics parameters:', env_base.get_parameters()) # masses of each link of the Hopper
+
 
     # Configuración para la grabación de video
     if args.record_video:
