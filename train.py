@@ -69,7 +69,7 @@ def main():
 
         while not done:  # Loop until the episode is over
 
-            action, action_probabilities = agent.get_action(state)
+            action, action_log_prob = agent.get_action(state)
             previous_state = state
 
             step_res = env.step(action.detach().cpu().numpy())
@@ -79,13 +79,6 @@ def main():
 
             train_reward += float(reward)
 
-            previous_state = state
-
-            state, reward, done, info = env.step(action.detach().cpu().numpy())
-
-            agent.store_outcome(previous_state, state, action_probabilities, reward, done)
-
-            train_reward += reward
 
         #Al finalizar el episodio se actualiza la politica para REINFORCE
         #loss_value = agent.update_policy()

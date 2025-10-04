@@ -28,11 +28,11 @@ class Policy(torch.nn.Module):
         self.fc1_actor = torch.nn.Linear(state_space, self.hidden)  #capa de entrada: toma el espacio y produce salidas
         self.fc2_actor = torch.nn.Linear(self.hidden, self.hidden)  
         self.fc3_actor_mean = torch.nn.Linear(self.hidden, action_space)  #capa de salida: produce la media de la distribucion de acciones
-        
-        # Learned standard deviation for exploration at training time 
-        self.sigma_activation = F.softplus
+
+        # Learned standard deviation for exploration at training time (log-std per action)
+        # We parameterize std as exp(log_std) for numerical stability.
         init_sigma = 0.5
-        self.sigma = torch.nn.Parameter(torch.zeros(self.action_space)+init_sigma)
+        self.log_std = torch.nn.Parameter(torch.full((self.action_space,), np.log(init_sigma), dtype=torch.float32))
 
 
         """
@@ -62,7 +62,10 @@ class Policy(torch.nn.Module):
         x_actor = self.tanh(self.fc2_actor(x_actor))
         action_mean = self.fc3_actor_mean(x_actor)
 
-        sigma = self.sigma_activation(self.sigma)
+        # Build positive std from learnable log_std; expand to batch size if needed
+        sigma = torch.exp(self.log_std)
+        if sigma.dim() == 1 and action_mean.dim() == 2:
+            sigma = sigma.unsqueeze(0).expand_as(action_mean)
         normal_dist = Normal(action_mean, sigma)
 
 
@@ -77,8 +80,6 @@ class Policy(torch.nn.Module):
         
         return normal_dist, value
 
-        
-        return normal_dist
 
 
 class Agent(object):
@@ -124,6 +125,7 @@ class Agent(object):
         # La función discount_rewards espera un tensor de recompensas por episodio.
         # Asumimos que los datos en self.rewards corresponden a un solo episodio.
         discounted_returns = discount_rewards(rewards, self.gamma)
+        discounted_returns_norm = (discounted_returns - discounted_returns.mean()) / (discounted_returns.std() + 1e-8) # Normalizar retornos para estabilidad
         
         # 2. Obtener valores de estado V(s_t) del crítico para los estados de la trayectoria
         # El método policy.forward() ahora devuelve (distribución, valor)
@@ -136,7 +138,7 @@ class Agent(object):
 
         # 3. Calcular ventajas A_t = G_t - V(s_t)
         # Usamos value_preds.detach() para que los gradientes de la pérdida del actor no afecten al crítico.
-        advantages = discounted_returns - value_preds.detach() 
+        advantages = discounted_returns_norm - value_preds.detach() 
     
 
           #
@@ -158,13 +160,13 @@ class Agent(object):
         #loss = - (action_log_probs * discounted_returns).sum() 
 
         # ------ perdiad con BASELINE ------
-        actor_loss = -(action_log_probs * advantages).sum()
+        actor_loss = -(action_log_probs * advantages).sum(dim=-1) # Minimizar la pérdida del actor (maximizar la esperanza de las ventajas)
 
 
         # 5. Calcular pérdida del crítico
         # Loss_critic = MSE(G_t, V(s_t))
         # El crítico intenta predecir los retornos descontados.
-        critic_loss = F.mse_loss(value_preds, discounted_returns) # Usar discounted_returns_norm si se normalizaron
+        critic_loss = F.mse_loss(value_preds, discounted_returns_norm) # Usar discounted_returns_norm si se normalizaron
 
         # 6. Combinar pérdidas
         # El coeficiente 0.5 para la pérdida del crítico es común.
@@ -193,7 +195,7 @@ class Agent(object):
             action_log_prob = None # No se necesita para evaluación
         else:
             action = normal_dist.sample() # Acción estocástica
-            action_log_prob = normal_dist.log_prob(action).sum()
+            action_log_prob = normal_dist.log_prob(action).sum(dim=-1)
 
         return action, action_log_prob
 
