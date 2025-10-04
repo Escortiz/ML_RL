@@ -1,11 +1,17 @@
-gym==0.26.2
-stable-baselines3[extra]==1.7.0
+stable-baselines3[extra]>=1.7.0
 cython<3
 Jinja2==3.1.2
 scipy
 numpy
 patchelf
-# NOTE: Omitimos `mujoco-py` en Colab (suele fallar por compilación/licencia).
+# NOTE: No fijamos `gym` aquí para evitar conflictos de dependencia con
+# stable-baselines3. Pip resolverá una versión compatible de `gym` cuando
+# instales `stable-baselines3`.
+# Si necesitas una versión específica de `gym`, instálala explícitamente
+# después (por ejemplo `pip install gym==0.21.0`) y asegúrate de que es
+# compatible con la versión de stable-baselines3 que estás usando.
+#
+# Omitimos `mujoco-py` en Colab (suele fallar por compilación/licencia).
 # Instalaremos `mujoco` manualmente si el proyecto lo requiere y es compatible.
 # Instalación de `torch` (y su versión CUDA) conviene hacerla con el comando
 # apropiado para el entorno (Colab): ver COLAB_SETUP.md
