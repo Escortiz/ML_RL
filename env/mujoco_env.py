@@ -47,25 +47,32 @@ class MujocoEnv(gym.Env):
     """Interface for MuJoCo environments.
     """
 
-    def __init__(self, frame_skip):
+    def __init__(self, frame_skip, render_mode=None):
 
         self.frame_skip = frame_skip
+        self.render_mode = render_mode
         self.build_model()
-        self.data = self.sim.data
+        
+        # Adaptar para ambas versiones de mujoco
+        if _HAS_MUJOCO_PY:
+            self.data = self.sim.data
+            self.init_qpos = self.sim.data.qpos.ravel().copy()
+            self.init_qvel = self.sim.data.qvel.ravel().copy()
+        else:
+            self.data = self.sim  # En la API moderna, sim es directamente el MjData
+            self.init_qpos = self.sim.qpos.ravel().copy()
+            self.init_qvel = self.sim.qvel.ravel().copy()
 
         self.metadata = {
             'render.modes': ['human', 'rgb_array', 'depth_array'],
             'video.frames_per_second': int(np.round(1.0 / self.dt))
         }
 
-        self.init_qpos = self.sim.data.qpos.ravel().copy()
-        self.init_qvel = self.sim.data.qvel.ravel().copy()
-
         self._set_action_space()
 
         action = self.action_space.sample()
-        observation, _reward, done, _info = self.step(action)
-        assert not done
+        observation, _reward, done, truncated, _info = self.step(action)
+        assert not done and not truncated
 
         self._set_observation_space(observation)
 
@@ -91,15 +98,19 @@ class MujocoEnv(gym.Env):
                 else:
                     # fallback to low-level load
                     self.model = mujoco.MjModel(xml_path)
-                # create sim
-                self.sim = mujoco.MjSim(self.model)
+                # create sim for modern mujoco (v3.x)
+                self.sim = mujoco.MjData(self.model)
             except Exception as e:
                 raise error.DependencyNotInstalled(f"Failed to initialize modern 'mujoco' backend: {e}")
         self.viewer = None
         self._viewers = {}
 
     def _set_action_space(self):
-        bounds = self.model.actuator_ctrlrange.copy().astype(np.float32)
+        if _HAS_MUJOCO_PY:
+            bounds = self.model.actuator_ctrlrange.copy().astype(np.float32)
+        else:
+            # En mujoco moderno
+            bounds = np.vstack((self.model.actuator_ctrlrange[:,0], self.model.actuator_ctrlrange[:,1])).T.astype(np.float32)
         low, high = bounds.T
         self.action_space = spaces.Box(low=low, high=high, dtype=np.float32)
         return self.action_space
@@ -150,9 +161,10 @@ class MujocoEnv(gym.Env):
         else:
             # Modern mujoco: assign qpos/qvel directly and forward the sim
             try:
-                self.sim.data.qpos[:] = qpos
-                self.sim.data.qvel[:] = qvel
-                self.sim.forward()
+                # Para la versión moderna de mujoco
+                self.sim.qpos[:] = qpos
+                self.sim.qvel[:] = qvel
+                mujoco.mj_forward(self.model, self.sim)
             except Exception as e:
                 raise RuntimeError(f"Failed to set state on modern mujoco sim: {e}")
 
@@ -163,9 +175,15 @@ class MujocoEnv(gym.Env):
     def do_simulation(self, ctrl, n_frames):
         # stepping is similar in both backends
         try:
-            self.sim.data.ctrl[:] = ctrl
-            for _ in range(n_frames):
-                self.sim.step()
+            if _HAS_MUJOCO_PY:
+                self.sim.data.ctrl[:] = ctrl
+                for _ in range(n_frames):
+                    self.sim.step()
+            else:
+                # Para la versión moderna de mujoco
+                self.sim.ctrl[:] = ctrl
+                for _ in range(n_frames):
+                    mujoco.mj_step(self.model, self.sim)
         except Exception as e:
             raise RuntimeError(f"Simulation step failed: {e}")
 
@@ -232,10 +250,22 @@ class MujocoEnv(gym.Env):
         return self.viewer
 
     def get_body_com(self, body_name):
-        return self.data.get_body_xpos(body_name)
+        if _HAS_MUJOCO_PY:
+            return self.data.get_body_xpos(body_name)
+        else:
+            # En mujoco moderno, necesitamos obtener el ID del cuerpo primero
+            body_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, body_name)
+            return self.data.xpos[body_id]
 
     def state_vector(self):
-        return np.concatenate([
-            self.sim.data.qpos.flat,
-            self.sim.data.qvel.flat
-        ])
+        if _HAS_MUJOCO_PY:
+            return np.concatenate([
+                self.sim.data.qpos.flat,
+                self.sim.data.qvel.flat
+            ])
+        else:
+            # Mujoco moderno
+            return np.concatenate([
+                self.sim.qpos.flat,
+                self.sim.qvel.flat
+            ])

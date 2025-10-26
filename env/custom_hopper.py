@@ -8,18 +8,23 @@ from copy import deepcopy
 import numpy as np
 import gym
 from gym import utils
-from .mujoco_env import MujocoEnv
+from .mujoco_env import MujocoEnv, _HAS_MUJOCO_PY
 
 
 class CustomHopper(MujocoEnv, utils.EzPickle):
-    def __init__(self, domain=None):
-        MujocoEnv.__init__(self, 4)
+    def __init__(self, domain=None, render_mode=None):
+        MujocoEnv.__init__(self, frame_skip=4, render_mode=render_mode)
         utils.EzPickle.__init__(self)
 
-        self.original_masses = np.copy(self.sim.model.body_mass[1:])    # Default link masses
-
-        if domain == 'source':  # Source environment has an imprecise torso mass (-30% shift)
-            self.sim.model.body_mass[1] *= 0.7
+        if _HAS_MUJOCO_PY:
+            self.original_masses = np.copy(self.sim.model.body_mass[1:])    # Default link masses
+            if domain == 'source':  # Source environment has an imprecise torso mass (-30% shift)
+                self.sim.model.body_mass[1] *= 0.7
+        else:
+            # Mujoco moderno
+            self.original_masses = np.copy(self.model.body_mass[1:])    # Default link masses
+            if domain == 'source':  # Source environment has an imprecise torso mass (-30% shift)
+                self.model.body_mass[1] *= 0.7
 
     def set_random_parameters(self):
         """Set random masses"""
@@ -40,13 +45,21 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
 
     def get_parameters(self):
         """Get value of mass for each link"""
-        masses = np.array( self.sim.model.body_mass[1:] )
+        if _HAS_MUJOCO_PY:
+            masses = np.array(self.sim.model.body_mass[1:])
+        else:
+            # Mujoco moderno
+            masses = np.array(self.model.body_mass[1:])
         return masses
 
 
     def set_parameters(self, task):
         """Set each hopper link's mass to a new value"""
-        self.sim.model.body_mass[1:] = task
+        if _HAS_MUJOCO_PY:
+            self.sim.model.body_mass[1:] = task
+        else:
+            # Mujoco moderno
+            self.model.body_mass[1:] = task
 
 
     def step(self, a):
@@ -57,9 +70,16 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         a : ndarray,
             action to be taken at the current timestep
         """
-        posbefore = self.sim.data.qpos[0]
-        self.do_simulation(a, self.frame_skip)
-        posafter, height, ang = self.sim.data.qpos[0:3]
+        if _HAS_MUJOCO_PY:
+            posbefore = self.sim.data.qpos[0]
+            self.do_simulation(a, self.frame_skip)
+            posafter, height, ang = self.sim.data.qpos[0:3]
+        else:
+            # Mujoco moderno
+            posbefore = self.sim.qpos[0]
+            self.do_simulation(a, self.frame_skip)
+            posafter, height, ang = self.sim.qpos[0:3]
+            
         alive_bonus = 1.0
         reward = (posafter - posbefore) / self.dt
         reward += alive_bonus
@@ -68,15 +88,23 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         done = not (np.isfinite(s).all() and (np.abs(s[2:]) < 100).all() and (height > .7) and (abs(ang) < .2))
         ob = self._get_obs()
 
-        return ob, reward, done, {}
+        # Actualizando para cumplir con la API de gymnasium (incluye info y truncated)
+        return ob, reward, done, False, {}
 
 
     def _get_obs(self):
         """Get current state"""
-        return np.concatenate([
-            self.sim.data.qpos.flat[1:],
-            self.sim.data.qvel.flat
-        ])
+        if _HAS_MUJOCO_PY:
+            return np.concatenate([
+                self.sim.data.qpos.flat[1:],
+                self.sim.data.qvel.flat
+            ])
+        else:
+            # Mujoco moderno
+            return np.concatenate([
+                self.sim.qpos.flat[1:],
+                self.sim.qvel.flat
+            ])
 
 
     def reset_model(self):

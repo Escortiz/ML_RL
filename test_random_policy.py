@@ -15,7 +15,7 @@
 import pdb
 import os
 
-import  gym
+import gym
 from gym.wrappers import RecordVideo
 
 
@@ -23,8 +23,8 @@ from env.custom_hopper import *
 
 
 def main():
-	env_base = gym.make('CustomHopper-source-v0') #render mode rgb_array to capture frames
-	# env = gym.make('CustomHopper-target-v0')
+	env_base = gym.make('CustomHopper-source-v0', render_mode="rgb_array")
+	# env = gym.make('CustomHopper-target-v0', render_mode="rgb_array")
 	video_folder = "./videos_hopper_gym021"
 	os.makedirs(video_folder, exist_ok=True) # Crear carpeta si no existe
 	
@@ -34,7 +34,11 @@ def main():
 
 	print('State space:', env_base.observation_space) # state-space
 	print('Action space:', env_base.action_space) # action-space
-	print('Dynamics parameters:', env_base.get_parameters()) # masses of each link of the Hopper
+	# Acceder al entorno sin el wrapper TimeLimit
+	try:
+		print('Dynamics parameters:', env_base.get_parameters()) # masses of each link of the Hopper
+	except:
+		print('Dynamics parameters: Not directly accessible due to wrappers')
 
 	n_episodes = 500
 	#render = True ## ------not necesary using RecordVideo ----
@@ -48,7 +52,8 @@ def main():
 
 			action = env.action_space.sample()	# Sample random action
 		
-			state, reward, done, info = env.step(action)	# Step the simulator to the next timestep
+			state, reward, done, truncated, info = env.step(action)	# Step the simulator to the next timestep
+			done = done or truncated  # Terminado si done o truncated
 			#------- replaced by record video -----
 			#if render:
 			#	env.render(mode='rgb_array')
