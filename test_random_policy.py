@@ -52,8 +52,8 @@ def main():
 
 			action = env.action_space.sample()	# Sample random action
 		
-			state, reward, done, truncated, info = env.step(action)	# Step the simulator to the next timestep
-			done = done or truncated  # Terminado si done o truncated
+			state, reward, done, info = env.step(action)	# Step the simulator to the next timestep
+		
 			#------- replaced by record video -----
 			#if render:
 			#	env.render(mode='rgb_array')
