@@ -88,8 +88,11 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         done = not (np.isfinite(s).all() and (np.abs(s[2:]) < 100).all() and (height > .7) and (abs(ang) < .2))
         ob = self._get_obs()
 
-        # Actualizando para cumplir con la API de gymnasium (incluye info y truncated)
-        return ob, reward, done, False, {}
+        # Devolver una 4-tupla compatible con la API de OpenAI Gym (obs, reward, done, info)
+        # Algunas versiones modernas (gymnasium) devuelven 5-tuplas
+        # (obs, reward, terminated, truncated, info). Para mantener compatibilidad
+        # con gym y con los wrappers (TimeLimit) devolvemos la forma clásica.
+        return ob, reward, done, {}
 
 
     def _get_obs(self):

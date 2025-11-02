@@ -4,8 +4,8 @@
     Read the stable-baselines3 documentation and implement a training
     pipeline with an RL algorithm of your choice between PPO and SAC.
 """
-import argparse
 import torch
+import argparse
 import gym
 from stable_baselines3 import SAC, PPO
 from env.custom_hopper import *

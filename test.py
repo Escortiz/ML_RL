@@ -1,7 +1,7 @@
 """Test an RL agent on the OpenAI Gym Hopper environment"""
+import torch
 import argparse
 import os
-import torch
 import gym
 from gym.wrappers import RecordVideo
 
