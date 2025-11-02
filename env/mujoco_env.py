@@ -71,8 +71,16 @@ class MujocoEnv(gym.Env):
         self._set_action_space()
 
         action = self.action_space.sample()
-        observation, _reward, done, truncated, _info = self.step(action)
-        assert not done and not truncated
+        step_result = self.step(action)
+        # Manejar tanto gym (4-tupla) como gymnasium (5-tupla)
+        if len(step_result) == 5:
+            observation, _reward, done, truncated, _info = step_result
+            assert not (done or truncated), "Initial step should not be terminal"
+        elif len(step_result) == 4:
+            observation, _reward, done, _info = step_result
+            assert not done, "Initial step should not be done"
+        else:
+            raise ValueError(f"step() returned {len(step_result)} values, expected 4 or 5")
 
         self._set_observation_space(observation)
 
