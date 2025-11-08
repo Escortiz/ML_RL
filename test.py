@@ -23,6 +23,9 @@ def parse_args():
     # Flag para activar entrenamiento (si quieres usar este script para entrenar)
     parser.add_argument('--train', default=False, action='store_true', help='Run training loop instead of evaluation')
     parser.add_argument('--save-every', default=50, type=int, help='Save model every N training episodes')
+    
+    # Flag para controlar modo evaluación (determinista) vs exploración (estocástico)
+    parser.add_argument('--exploration', default=False, action='store_true', help='Enable exploration (stochastic actions) instead of deterministic evaluation mode')
 
     return parser.parse_args()
 
@@ -105,6 +108,19 @@ def main():
 
     agent = Agent(policy, device=args.device)
 
+    # Informar al usuario sobre el modo
+    if args.train:
+        print("\n" + "="*70)
+        print("MODO: TRAINING (con exploración stocástica)")
+        print("="*70)
+    else:
+        print("\n" + "="*70)
+        if args.exploration:
+            print("MODO: EVALUACIÓN CON EXPLORACIÓN (stochastic - actions aleatorias)")
+        else:
+            print("MODO: EVALUACIÓN DETERMINISTA (deterministic - mean actions)")
+        print("="*70)
+
     # TRAINING LOOP
     if args.train:
         for episode in range(args.episodes):
@@ -113,7 +129,8 @@ def main():
             state = _unpack_reset(env.reset())
             # Si tu gym devuelve (obs, info), _unpack_reset se encarga de ello
             while not done:
-                action, _ = agent.get_action(state, evaluation=True)  
+                # evaluation=False para exploración durante training
+                action, _ = agent.get_action(state, evaluation=False)  
                 step_res = env.step(action.detach().cpu().numpy())
                 next_state, reward, done, info = _unpack_step(step_res)
                 # Ajustar si step devuelve (obs, reward, terminated, truncated, info)
@@ -150,7 +167,11 @@ def main():
             test_reward = 0.0
             state = _unpack_reset(env.reset())
             while not done:
-                action, _ = agent.get_action(state, evaluation=True)  # determinista en evaluación
+                # Usar parámetro --exploration para controlar modo
+                # Si --exploration: evaluation=False (stochastic, con exploración)
+                # Si sin --exploration: evaluation=True (deterministic, sin exploración)
+                evaluation_mode = not args.exploration
+                action, _ = agent.get_action(state, evaluation=evaluation_mode)
                 step_res = env.step(action.detach().cpu().numpy())
                 state, reward, done, info = _unpack_step(step_res)
                 if not args.record_video and args.render:

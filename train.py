@@ -1,8 +1,8 @@
 """Train an RL agent on the OpenAI Gym Hopper environment using
     REINFORCE and Actor-critic algorithms
 """
-import argparse
 import torch
+import argparse
 import gym
 
 from env.custom_hopper import *

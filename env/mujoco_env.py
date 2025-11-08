@@ -152,7 +152,11 @@ class MujocoEnv(gym.Env):
     # -----------------------------
 
     def reset(self):
-        self.sim.reset()
+        if _HAS_MUJOCO_PY:
+            self.sim.reset()
+        else:
+            # Modern mujoco: reinitialize sim from model
+            self.sim = mujoco.MjData(self.model)
         ob = self.reset_model()
         return ob
 
@@ -210,25 +214,57 @@ class MujocoEnv(gym.Env):
             if no_camera_specified:
                 camera_name = 'track'
 
-            if camera_id is None and camera_name in self.model._camera_name2id:
-                camera_id = self.model.camera_name2id(camera_name)
+            if camera_id is None and camera_name is not None:
+                if _HAS_MUJOCO_PY:
+                    if camera_name in self.model._camera_name2id:
+                        camera_id = self.model.camera_name2id(camera_name)
+                else:
+                    # Modern mujoco: use mj_name2id to get camera ID
+                    try:
+                        camera_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_CAMERA, camera_name)
+                    except:
+                        camera_id = -1  # Use free camera if named camera not found
 
-            self._get_viewer(mode).render(width, height, camera_id=camera_id)
+            if _HAS_MUJOCO_PY:
+                self._get_viewer(mode).render(width, height, camera_id=camera_id)
+            else:
+                # Modern mujoco rendering
+                renderer = self._get_viewer(mode)
+                # Update renderer size if different
+                if renderer.width != width or renderer.height != height:
+                    renderer = mujoco.Renderer(self.model, height=height, width=width)
+                    self._viewers[mode] = renderer
+                
+                # Update the scene with current simulation state
+                renderer.update_scene(self.sim, camera=camera_id if camera_id is not None and camera_id >= 0 else None)
 
         if mode == 'rgb_array':
-            # window size used for old mujoco-py:
-            data = self._get_viewer(mode).read_pixels(width, height, depth=False)
-            # original image is upside-down, so flip it
-            return data[::-1, :, :]
+            if _HAS_MUJOCO_PY:
+                # window size used for old mujoco-py:
+                data = self._get_viewer(mode).read_pixels(width, height, depth=False)
+                # original image is upside-down, so flip it
+                return data[::-1, :, :]
+            else:
+                # Modern mujoco: render and return pixels
+                renderer = self._get_viewer(mode)
+                pixels = renderer.render()
+                return pixels
         elif mode == 'depth_array':
-            self._get_viewer(mode).render(width, height)
-            # window size used for old mujoco-py:
-            # Extract depth part of the read_pixels() tuple
-            data = self._get_viewer(mode).read_pixels(width, height, depth=True)[1]
-            # original image is upside-down, so flip it
-            return data[::-1, :]
+            if _HAS_MUJOCO_PY:
+                self._get_viewer(mode).render(width, height)
+                # window size used for old mujoco-py:
+                # Extract depth part of the read_pixels() tuple
+                data = self._get_viewer(mode).read_pixels(width, height, depth=True)[1]
+                # original image is upside-down, so flip it
+                return data[::-1, :]
+            else:
+                # Modern mujoco: depth rendering not implemented in simple Renderer
+                raise NotImplementedError("Depth rendering not yet implemented for modern mujoco backend")
         elif mode == 'human':
-            self._get_viewer(mode).render()
+            if _HAS_MUJOCO_PY:
+                self._get_viewer(mode).render()
+            else:
+                raise RuntimeError("Human rendering mode not supported with modern mujoco backend")
 
     def close(self):
         if self.viewer is not None:
@@ -245,13 +281,14 @@ class MujocoEnv(gym.Env):
                 elif mode == 'rgb_array' or mode == 'depth_array':
                     self.viewer = mujoco_py.MjRenderContextOffscreen(self.sim, -1)
             else:
-                # Modern mujoco rendering differs; try to provide a helpful error
-                # message. In many Colab/headless setups the modern 'mujoco'
-                # package with MUJOCO_GL=egl can render offscreen, but adapting
-                # the APIs here is non-trivial. If you need rendering in Colab,
-                # prefer installing 'mujoco' + glfw and adjust this wrapper, or
-                # install 'mujoco_py' locally where supported.
-                raise RuntimeError("Rendering with the modern 'mujoco' backend is not fully supported by this wrapper. If you only need to run headless simulations, continue; otherwise install mujoco_py or extend this file to use the modern rendering APIs.")
+                # Modern mujoco: create offscreen renderer
+                if mode == 'human':
+                    raise RuntimeError("Human rendering mode not supported with modern mujoco backend. Use 'rgb_array' mode instead.")
+                elif mode == 'rgb_array' or mode == 'depth_array':
+                    # Create a renderer for offscreen rendering
+                    self.viewer = mujoco.Renderer(self.model, height=DEFAULT_SIZE, width=DEFAULT_SIZE)
+                else:
+                    raise ValueError(f"Unsupported rendering mode: {mode}")
 
             self.viewer_setup()
             self._viewers[mode] = self.viewer
