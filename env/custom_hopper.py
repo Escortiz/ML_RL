@@ -8,7 +8,11 @@ from copy import deepcopy
 import numpy as np
 import gym
 from gym import utils
-from .mujoco_env import MujocoEnv, _HAS_MUJOCO_PY
+from .mujoco_env import MujocoEnv, _HAS_MUJOCO_PY, _HAS_MUJOCO
+
+# Import mujoco if available (modern backend)
+if _HAS_MUJOCO:
+    import mujoco
 
 
 class CustomHopper(MujocoEnv, utils.EzPickle):
@@ -117,10 +121,15 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
 
 
     def viewer_setup(self):
-        self.viewer.cam.trackbodyid = 2
-        self.viewer.cam.distance = self.model.stat.extent * 0.75
-        self.viewer.cam.lookat[2] = 1.15
-        self.viewer.cam.elevation = -20
+        if _HAS_MUJOCO_PY:
+            self.viewer.cam.trackbodyid = 2
+            self.viewer.cam.distance = self.model.stat.extent * 0.75
+            self.viewer.cam.lookat[2] = 1.15
+            self.viewer.cam.elevation = -20
+        else:
+            # Modern mujoco Renderer doesn't have a 'cam' attribute
+            # Camera setup is handled differently in the render() method
+            pass
 
 
     def set_mujoco_state(self, state):
@@ -131,23 +140,40 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         state: ndarray,
                desired state
         """
-        mjstate = deepcopy(self.get_mujoco_state())
-
-        mjstate.qpos[0] = 0.
-        mjstate.qpos[1:] = state[:5]
-        mjstate.qvel[:] = state[5:]
-
-        self.set_sim_state(mjstate)
+        if _HAS_MUJOCO_PY:
+            mjstate = deepcopy(self.get_mujoco_state())
+            mjstate.qpos[0] = 0.
+            mjstate.qpos[1:] = state[:5]
+            mjstate.qvel[:] = state[5:]
+            self.set_sim_state(mjstate)
+        else:
+            # Modern mujoco: directly set qpos and qvel
+            self.sim.qpos[0] = 0.
+            self.sim.qpos[1:] = state[:5]
+            self.sim.qvel[:] = state[5:]
+            mujoco.mj_forward(self.model, self.sim)
 
 
     def set_sim_state(self, mjstate):
         """Set internal mujoco state"""
-        return self.sim.set_state(mjstate)
+        if _HAS_MUJOCO_PY:
+            return self.sim.set_state(mjstate)
+        else:
+            # Modern mujoco: state is set directly via qpos/qvel
+            raise NotImplementedError("set_sim_state not supported with modern mujoco backend. Use set_state() instead.")
 
 
     def get_mujoco_state(self):
         """Returns current mjstate"""
-        return self.sim.get_state()
+        if _HAS_MUJOCO_PY:
+            return self.sim.get_state()
+        else:
+            # Modern mujoco doesn't have get_state(), return a simple state dict
+            class MjState:
+                def __init__(self, qpos, qvel):
+                    self.qpos = qpos.copy()
+                    self.qvel = qvel.copy()
+            return MjState(self.sim.qpos, self.sim.qvel)
 
 
 
