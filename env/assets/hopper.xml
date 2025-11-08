@@ -8,6 +8,7 @@
   <option integrator="RK4" timestep="0.002"/>
   <visual>
     <map znear="0.02"/>
+    <global offwidth="1280" offheight="720"/>
   </visual>
   
   <worldbody>

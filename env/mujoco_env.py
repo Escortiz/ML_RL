@@ -24,7 +24,7 @@ except Exception:
     except Exception:
         raise error.DependencyNotInstalled("You need to install mujoco_py or mujoco (https://mujoco.org/). In Colab prefer 'pip install mujoco' and set MUJOCO_GL=egl, or install mujoco_py locally if needed.")
 
-DEFAULT_SIZE = 500
+DEFAULT_SIZE = 480  # Reduced from 500 to match default MuJoCo framebuffer
 
 
 def convert_observation_to_space(observation):
@@ -230,10 +230,17 @@ class MujocoEnv(gym.Env):
             else:
                 # Modern mujoco rendering
                 renderer = self._get_viewer(mode)
+                # Limit dimensions to safe values for MuJoCo's default framebuffer
+                safe_width = min(width, 640)
+                safe_height = min(height, 480)
                 # Update renderer size if different
-                if renderer.width != width or renderer.height != height:
-                    renderer = mujoco.Renderer(self.model, height=height, width=width)
-                    self._viewers[mode] = renderer
+                if renderer.width != safe_width or renderer.height != safe_height:
+                    try:
+                        renderer = mujoco.Renderer(self.model, height=safe_height, width=safe_width)
+                        self._viewers[mode] = renderer
+                    except ValueError:
+                        # If still fails, use the existing renderer
+                        pass
                 
                 # Update the scene with current simulation state
                 renderer.update_scene(self.sim, camera=camera_id if camera_id is not None and camera_id >= 0 else None)
@@ -285,8 +292,16 @@ class MujocoEnv(gym.Env):
                 if mode == 'human':
                     raise RuntimeError("Human rendering mode not supported with modern mujoco backend. Use 'rgb_array' mode instead.")
                 elif mode == 'rgb_array' or mode == 'depth_array':
-                    # Create a renderer for offscreen rendering
-                    self.viewer = mujoco.Renderer(self.model, height=DEFAULT_SIZE, width=DEFAULT_SIZE)
+                    # Create a renderer for offscreen rendering with safe dimensions
+                    # Use smaller size to avoid framebuffer issues
+                    safe_height = min(DEFAULT_SIZE, 480)
+                    safe_width = min(DEFAULT_SIZE, 640)
+                    try:
+                        self.viewer = mujoco.Renderer(self.model, height=safe_height, width=safe_width)
+                    except ValueError as e:
+                        # If still too large, fall back to even smaller size
+                        print(f"Warning: Failed to create renderer with {safe_height}x{safe_width}, trying 240x320")
+                        self.viewer = mujoco.Renderer(self.model, height=240, width=320)
                 else:
                     raise ValueError(f"Unsupported rendering mode: {mode}")
 
