@@ -166,6 +166,7 @@ def cli_main():
         save_config_callback=None,
         seed_everything_default=0,
         trainer_defaults={
+            "accelerator": "auto",
             "precision": "16-mixed",
             "enable_model_summary": False,
             "callbacks": [
