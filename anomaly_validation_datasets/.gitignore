@@ -1,3 +1,0 @@
-# Ignore dataset files
-anomaly_validation_datasets/*
-!anomaly_validation_datasets/README.md
