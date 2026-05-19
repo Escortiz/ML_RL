@@ -1,0 +1,3 @@
+# Ignore dataset files
+cityscapes_dataset/*
+!cityscapes_dataset/README.md
