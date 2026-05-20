@@ -20,7 +20,7 @@ from dataset import cityscapes
 from erfnet import ERFNet
 from transform import Relabel, ToLabel, Colorize
 
-import visdom
+#import visdom
 
 
 NUM_CHANNELS = 3
