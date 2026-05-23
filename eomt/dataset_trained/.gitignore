@@ -1,0 +1,3 @@
+# Ignore dataset files
+dataset_trained/*
+!dataset_trained/README.md
