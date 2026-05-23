@@ -47,11 +47,7 @@ wget --load-cookies cookies.txt --content-disposition https://www.cityscapes-dat
 To train EoMT from scratch (don't do it, it will be impossible to do it in Colab due to resource contraints):
 
 ```bash
-python3 main.py fit \
-  -c configs/dinov2/cityscapes/semantic/eomt_base_640.yaml \
-  --trainer.devices 4 \
-  --data.batch_size 4 \
-  --data.path /path/to/dataset
+python .\eomt\main.py fit -c eomt/configs/dinov2/cityscapes/semantic/eomt_base_640.yaml --trainer.devices 4 --data.batch_size 4 --data.path .\CityScapesDataset
 ```
 
 This command trains the `EoMT-L` model with a 640×640 input size on Citiscapes segmentation using 4 GPUs. Each GPU processes a batch of 4 images, for a total batch size of 16.

@@ -1,0 +1,84 @@
+_wandb:
+    value:
+        cli_version: 0.26.1
+        e:
+            nomyxkhojv6q7ydyb4xf5av6pdyv8cd3:
+                args:
+                    - fit
+                    - -c
+                    - eomt/configs/dinov2/cityscapes/semantic/eomt_base_640.yaml
+                    - --trainer.devices
+                    - "4"
+                    - --data.batch_size
+                    - "4"
+                    - --data.path
+                    - \CityScapesDataset
+                codePath: eomt\main.py
+                codePathLocal: eomt\main.py
+                cpu_count: 4
+                cpu_count_logical: 8
+                disk:
+                    /:
+                        total: "510494314496"
+                        used: "432291938304"
+                email: ecoronadoortiz@gmail.com
+                executable: C:\Python313\python.exe
+                git:
+                    commit: c9888805ad08d3c534d905a4646ff6d3ad460335
+                    remote: https://github.com/Escortiz/ML_RL.git
+                host: LAPTOP-ORF99PSN
+                memory:
+                    total: "16856494080"
+                os: Windows-11-10.0.26200-SP0
+                program: C:\Users\ecoro\OneDrive\Documentos\LM Data Science and Engineering\2025-1\ML & DL\Reinforcement Learning\Project\ML_RL\eomt\main.py
+                python: CPython 3.13.7
+                root: .
+                startedAt: "2026-04-24T16:47:08.476210Z"
+                writerId: nomyxkhojv6q7ydyb4xf5av6pdyv8cd3
+        m:
+            - "1": trainer/global_step
+              "6":
+                - 3
+              "7": []
+            - "2": '*'
+              "5": 1
+              "6":
+                - 1
+              "7": []
+        python_version: 3.13.7
+        t:
+            "1":
+                - 1
+                - 2
+                - 3
+                - 5
+                - 11
+                - 41
+                - 49
+                - 51
+                - 53
+                - 63
+                - 106
+            "2":
+                - 1
+                - 2
+                - 3
+                - 5
+                - 11
+                - 41
+                - 49
+                - 51
+                - 53
+                - 63
+                - 106
+            "3":
+                - 7
+                - 13
+                - 66
+            "4": 3.13.7
+            "5": 0.26.1
+            "6": 4.56.1
+            "8":
+                - 3
+            "12": 0.26.1
+            "13": windows-amd64
