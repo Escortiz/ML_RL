@@ -1,7 +1,11 @@
 cityscapes_dataset/*
 anomaly_validation_datasets/*
+dataset_trained/*
 !cityscapes_dataset/README.md
 !cityscapes_dataset/.gitignore
 !anomaly_validation_datasets/README.md
 !anomaly_validation_datasets/.gitignore
+!dataset_trained/README.md
+!dataset_trained/.gitignore
 *.zip
+*.bin
