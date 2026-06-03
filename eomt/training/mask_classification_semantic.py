@@ -5,6 +5,7 @@
 
 
 from typing import List, Optional
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -81,6 +82,10 @@ class MaskClassificationSemantic(LightningModule):
 
         self.init_metrics_semantic(ignore_idx, self.network.num_blocks + 1 if self.network.masked_attn_enabled else 1)
 
+        # POINT 5: FREEZING FOR FINE-TUNING
+        for param in self.network.encoder.parameters():
+            param.requires_grad = False
+
     def eval_step(
         self,
         batch,
@@ -102,12 +107,74 @@ class MaskClassificationSemantic(LightningModule):
             crop_logits = self.to_per_pixel_logits_semantic(mask_logits, class_logits)
             logits = self.revert_window_logits_semantic(crop_logits, origins, img_sizes)
 
-            self.update_metrics_semantic(logits, targets, i)
+            # POINT 4.2: FAIR EVALUATION PIPELINE
+            # The 12 shared classes (Cityscapes IDs)
+            SHARED_CLASSES = [0, 5, 6, 8, 10, 11, 13, 14, 15, 16, 17, 18]
+            
+            # Mapping: ID_COCO : ID_CITYSCAPES 
+            coco_to_city_map = {
+                100: 0,   # road -> road
+                92: 5,    # light -> pole
+                9: 6,     # traffic light -> traffic light
+                116: 8,   # tree-merged -> vegetation
+                119: 10,  # sky-other-merged -> sky
+                0: 11,    # person -> person
+                2: 13,    # car -> car
+                7: 14,    # truck -> truck
+                5: 15,    # bus -> bus
+                6: 16,    # train -> train
+                3: 17,    # motorcycle -> motorcycle
+                1: 18     # bicycle -> bicycle
+            }
+
+            metric_targets = []
+            metric_logits = []
+
+            for b in range(len(targets)):
+                # Target Masking (Ground Truth)
+                target_b_metric = targets[b].clone()
+                mask = torch.ones_like(target_b_metric, dtype=torch.bool)
+                for c in SHARED_CLASSES:
+                    mask &= (target_b_metric != c)
+                
+                mask &= (target_b_metric != self.ignore_idx)
+                target_b_metric[mask] = self.ignore_idx
+                metric_targets.append(target_b_metric)
+
+                # Logit Remapping and Filtering
+                logit_b = logits[b]
+                if logit_b.shape[0] > 19:
+                    # COCO --> 133 classes
+                    mapped_logits = torch.full((19, *logit_b.shape[1:]), -1000.0, device=logit_b.device, dtype=logit_b.dtype)
+                    for coco_id, city_id in coco_to_city_map.items():
+                        mapped_logits[city_id] = logit_b[coco_id]
+                    metric_logits.append(mapped_logits)
+                else:
+                    # Cityscapes --> reset the channels of the non-shared classes
+                    mapped_logits = torch.full_like(logit_b, -1000.0)
+                    for c in SHARED_CLASSES:
+                        mapped_logits[c] = logit_b[c]
+                    metric_logits.append(mapped_logits)
+
+            self.update_metrics_semantic(metric_logits, metric_targets, i)
 
             if batch_idx == 0:
                 self.plot_semantic(
                     imgs[0], targets[0], logits[0], log_prefix, i, batch_idx
                 )
+
+    def _on_eval_epoch_end_semantic(self, log_prefix, log_per_class=False):
+        SHARED_CLASSES = [0, 5, 6, 8, 10, 11, 13, 14, 15, 16, 17, 18]
+        
+        for i, metric in enumerate(self.metrics):
+            iou_per_class = metric.compute()
+            metric.reset()
+            valid_ious = iou_per_class[SHARED_CLASSES]
+            valid_ious = valid_ious[~torch.isnan(valid_ious)]
+            fair_iou = float(valid_ious.mean()) if len(valid_ious) > 0 else 0.0
+
+            block_postfix = self.block_postfix(i)
+            self.log(f"metrics/{log_prefix}_iou_all{block_postfix}", fair_iou)
 
     def on_validation_epoch_end(self):
         self._on_eval_epoch_end_semantic("val")
