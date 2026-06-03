@@ -109,22 +109,26 @@ class MaskClassificationSemantic(LightningModule):
 
             # POINT 4.2: FAIR EVALUATION PIPELINE
             # The 12 shared classes (Cityscapes IDs)
-            SHARED_CLASSES = [0, 5, 6, 8, 10, 11, 13, 14, 15, 16, 17, 18]
+            SHARED_CLASSES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
             
             # Mapping: ID_COCO : ID_CITYSCAPES 
             coco_to_city_map = {
-                100: 0,   # road -> road
-                92: 5,    # light -> pole
-                9: 6,     # traffic light -> traffic light
-                116: 8,   # tree-merged -> vegetation
-                119: 10,  # sky-other-merged -> sky
-                0: 11,    # person -> person
-                2: 13,    # car -> car
-                7: 14,    # truck -> truck
-                5: 15,    # bus -> bus
-                6: 16,    # train -> train
-                3: 17,    # motorcycle -> motorcycle
-                1: 18     # bicycle -> bicycle
+                0: 100,   # road -> road
+                1: 123,   # sidewalk -> pavement-merged
+                2: 129,   # building -> building-other-merged
+                3: 131,   # wall -> wall-other-merged
+                4: 117,   # fence -> fence-merged
+                6: 9,     # traffic light -> traffic light
+                8: 116,   # vegetation -> tree-merged
+                9: 125,   # terrain -> grass-merged
+                10: 119,  # sky -> sky-other-merged
+                11: 0,    # person -> person
+                13: 2,    # car -> car
+                14: 7,    # truck -> truck
+                15: 5,    # bus -> bus
+                16: 6,    # train -> train
+                17: 3,    # motorcycle -> motorcycle
+                18: 1     # bicycle -> bicycle
             }
 
             metric_targets = []
@@ -146,7 +150,7 @@ class MaskClassificationSemantic(LightningModule):
                 if logit_b.shape[0] > 19:
                     # COCO --> 133 classes
                     mapped_logits = torch.full((19, *logit_b.shape[1:]), -1000.0, device=logit_b.device, dtype=logit_b.dtype)
-                    for coco_id, city_id in coco_to_city_map.items():
+                    for city_id, coco_id in coco_to_city_map.items():
                         mapped_logits[city_id] = logit_b[coco_id]
                     metric_logits.append(mapped_logits)
                 else:
@@ -162,19 +166,6 @@ class MaskClassificationSemantic(LightningModule):
                 self.plot_semantic(
                     imgs[0], targets[0], logits[0], log_prefix, i, batch_idx
                 )
-
-    def _on_eval_epoch_end_semantic(self, log_prefix, log_per_class=False):
-        SHARED_CLASSES = [0, 5, 6, 8, 10, 11, 13, 14, 15, 16, 17, 18]
-        
-        for i, metric in enumerate(self.metrics):
-            iou_per_class = metric.compute()
-            metric.reset()
-            valid_ious = iou_per_class[SHARED_CLASSES]
-            valid_ious = valid_ious[~torch.isnan(valid_ious)]
-            fair_iou = float(valid_ious.mean()) if len(valid_ious) > 0 else 0.0
-
-            block_postfix = self.block_postfix(i)
-            self.log(f"metrics/{log_prefix}_iou_all{block_postfix}", fair_iou)
 
     def on_validation_epoch_end(self):
         self._on_eval_epoch_end_semantic("val")
