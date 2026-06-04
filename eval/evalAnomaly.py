@@ -58,6 +58,9 @@ def main():
     parser.add_argument('--num-workers', type=int, default=4)
     parser.add_argument('--batch-size', type=int, default=1)
     parser.add_argument('--cpu', action='store_true')
+    # POINT 7
+    parser.add_argument('--method', type=str, default='max_logit', choices=['max_logit', 'msp', 'max_entropy'], 
+                        help='Metodo di Anomaly Segmentation: max_logit, msp, o max_entropy')
     args = parser.parse_args()
     anomaly_score_list = []
     ood_gts_list = []
@@ -77,7 +80,7 @@ def main():
     if (not args.cpu):
         model = torch.nn.DataParallel(model).cuda()
 
-    def load_my_state_dict(model, state_dict):  #custom function to load model when not all dict elements
+    def load_my_state_dict(model, state_dict):  # custom function to load model when not all dict elements
         own_state = model.state_dict()
         for name, param in state_dict.items():
             if name not in own_state:
@@ -97,10 +100,40 @@ def main():
     for path in glob.glob(os.path.expanduser(str(args.input[0]))):
         print(path)
         images = input_transform((Image.open(path).convert('RGB'))).unsqueeze(0).float().cuda()
-        #images = images.permute(0,3,1,2)
+        # images = images.permute(0,3,1,2)
         with torch.no_grad():
             result = model(images)
-        anomaly_result = 1.0 - np.max(result.squeeze(0).data.cpu().numpy(), axis=0)            
+        # POINT 7
+        # anomaly_result = 1.0 - np.max(result.squeeze(0).data.cpu().numpy(), axis=0) --> we don't need it anymore            
+            # Remove the batch size
+            logits = result.squeeze(0)
+
+            if args.method == 'max_logit':
+                # 1. Max Logit
+                # Calculate the maximum logit for each pixel and invert it
+                max_logits = torch.max(logits, dim=0)[0]
+                anomaly_result = - max_logits.data.cpu().numpy()
+                
+            elif args.method == 'msp':
+                # 2. Maximum Softmax Probability (MSP)
+                # Apply Softmax along the class axis (dim=0)
+                probs = torch.nn.functional.softmax(logits, dim=0)
+                # Find the maximum probability
+                max_probs = torch.max(probs, dim=0)[0]
+                # 1 - MaxProb
+                anomaly_result = 1.0 - max_probs.data.cpu().numpy()
+                
+            elif args.method == 'max_entropy':
+                # 3. Max Entropy
+                # Softmax to get the odds
+                probs = torch.nn.functional.softmax(logits, dim=0)
+                # Logarithm of probabilities
+                log_probs = torch.log(probs + 1e-10)
+                # Formula: H = - Sum( P * log(P) )
+                entropy = -torch.sum(probs * log_probs, dim=0)
+                normalized_entropy = entropy / torch.log(torch.tensor(logits.shape[0], dtype=torch.float32))
+                anomaly_result = normalized_entropy.data.cpu().numpy()
+                        
         pathGT = path.replace("images", "labels_masks")                
         if "RoadObsticle21" in pathGT:
            pathGT = pathGT.replace("webp", "png")

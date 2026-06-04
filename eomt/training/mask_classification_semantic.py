@@ -111,7 +111,7 @@ class MaskClassificationSemantic(LightningModule):
             # The 12 shared classes (Cityscapes IDs)
             SHARED_CLASSES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
             
-            # Mapping: ID_COCO : ID_CITYSCAPES 
+            # Mapping: ID_CITYSCAPES : ID_COCO 
             coco_to_city_map = {
                 0: 100,   # road -> road
                 1: 123,   # sidewalk -> pavement-merged
