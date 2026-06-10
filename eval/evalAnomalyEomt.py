@@ -77,8 +77,13 @@ def main():
         '--model_name', type=str, default='eomt'
     )
     args = parser.parse_args()
-    anomaly_score_list = []
-    ood_gts_list = []
+    
+    # ---------------------------------------------------------
+    # HACK RAM 1: Non salviamo più le immagini intere, 
+    # ma solo vettori lineari dei pixel che ci interessano!
+    # ---------------------------------------------------------
+    ood_out_list = []
+    ind_out_list = []
 
     if not os.path.exists('results.txt'):
         open('results.txt', 'w').close()
@@ -229,41 +234,46 @@ def main():
                 filename = os.path.basename(path).split('.')[0]
                 
                 save_data = {
-                    'pred_logits': logits.cpu(),
-                    'ood_gts': ood_gts
+                    'pred_logits': logits.detach().cpu().half().clone(),
+                    'ood_gts': ood_gts.astype(np.uint8)
                 }
                 torch.save(save_data, f"{cartella_salvataggio}/{filename}.pt")
+                del save_data
 
-            ood_gts_list.append(ood_gts)
-            anomaly_score_list.append(anomaly_result)
+            ood_mask_img = (ood_gts == 1)
+            ind_mask_img = (ood_gts == 0)
             
-        del result, anomaly_result, mask
+            ood_out_img = anomaly_result[ood_mask_img]
+            ind_out_img = anomaly_result[ind_mask_img]
+            
+            if len(ood_out_img) > 0:
+                ood_out_list.append(ood_out_img)
+            if len(ind_out_img) > 0:
+                ind_out_list.append(ind_out_img)
+            
+        del result, anomaly_result, mask, logits, prob_queries, known_probs, mask_probs
         torch.cuda.empty_cache()
 
     file.write( "\n")
 
-    ood_gts = np.array(ood_gts_list)
-    anomaly_scores = np.array(anomaly_score_list)
+    if len(ood_out_list) > 0 and len(ind_out_list) > 0:
+        ood_out = np.concatenate(ood_out_list)
+        ind_out = np.concatenate(ind_out_list)
 
-    ood_mask = (ood_gts == 1)
-    ind_mask = (ood_gts == 0)
+        ood_label = np.ones(len(ood_out))
+        ind_label = np.zeros(len(ind_out))
+        
+        val_out = np.concatenate((ind_out, ood_out))
+        val_label = np.concatenate((ind_label, ood_label))
 
-    ood_out = anomaly_scores[ood_mask]
-    ind_out = anomaly_scores[ind_mask]
+        prc_auc = average_precision_score(val_label, val_out)
+        fpr = fpr_at_95_tpr(val_out, val_label)
 
-    ood_label = np.ones(len(ood_out))
-    ind_label = np.zeros(len(ind_out))
-    
-    val_out = np.concatenate((ind_out, ood_out))
-    val_label = np.concatenate((ind_label, ood_label))
+        print(f'AUPRC score: {prc_auc*100.0}')
+        print(f'FPR@TPR95: {fpr*100.0}')
 
-    prc_auc = average_precision_score(val_label, val_out)
-    fpr = fpr_at_95_tpr(val_out, val_label)
-
-    print(f'AUPRC score: {prc_auc*100.0}')
-    print(f'FPR@TPR95: {fpr*100.0}')
-
-    file.write(('    AUPRC score:' + str(prc_auc*100.0) + '   FPR@TPR95:' + str(fpr*100.0) ))
+        file.write(('    AUPRC score:' + str(prc_auc*100.0) + '   FPR@TPR95:' + str(fpr*100.0) ))
+        
     file.close()
 
 if __name__ == '__main__':
