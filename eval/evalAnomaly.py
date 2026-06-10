@@ -59,8 +59,7 @@ def main():
     parser.add_argument('--batch-size', type=int, default=1)
     parser.add_argument('--cpu', action='store_true')
     # POINT 7
-    parser.add_argument('--method', type=str, default='max_logit', choices=['max_logit', 'msp', 'max_entropy'], 
-                        help='Metodo di Anomaly Segmentation: max_logit, msp, o max_entropy')
+    parser.add_argument('--method', type=str, default='max_logit', choices=['max_logit', 'msp', 'max_entropy'])
     args = parser.parse_args()
     anomaly_score_list = []
     ood_gts_list = []
@@ -109,30 +108,22 @@ def main():
             logits = result.squeeze(0)
 
             if args.method == 'max_logit':
-                # 1. Max Logit
                 # Calculate the maximum logit for each pixel and invert it
                 max_logits = torch.max(logits, dim=0)[0]
                 anomaly_result = - max_logits.data.cpu().numpy()
                 
             elif args.method == 'msp':
-                # 2. Maximum Softmax Probability (MSP)
                 # Apply Softmax along the class axis (dim=0)
                 probs = torch.nn.functional.softmax(logits, dim=0)
-                # Find the maximum probability
                 max_probs = torch.max(probs, dim=0)[0]
-                # 1 - MaxProb
                 anomaly_result = 1.0 - max_probs.data.cpu().numpy()
                 
             elif args.method == 'max_entropy':
-                # 3. Max Entropy
                 # Softmax to get the odds
                 probs = torch.nn.functional.softmax(logits, dim=0)
-                # Logarithm of probabilities
-                log_probs = torch.log(probs + 1e-10)
-                # Formula: H = - Sum( P * log(P) )
+                log_probs = torch.nn.functional.log_softmax(logits, dim=0)
                 entropy = -torch.sum(probs * log_probs, dim=0)
-                normalized_entropy = entropy / torch.log(torch.tensor(logits.shape[0], dtype=torch.float32))
-                anomaly_result = normalized_entropy.data.cpu().numpy()
+                anomaly_result = entropy.data.cpu().numpy()
                         
         pathGT = path.replace("images", "labels_masks")                
         if "RoadObsticle21" in pathGT:

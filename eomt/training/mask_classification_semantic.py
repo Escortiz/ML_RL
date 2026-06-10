@@ -108,7 +108,6 @@ class MaskClassificationSemantic(LightningModule):
             logits = self.revert_window_logits_semantic(crop_logits, origins, img_sizes)
 
             # POINT 4.2: FAIR EVALUATION PIPELINE
-            # The 12 shared classes (Cityscapes IDs)
             SHARED_CLASSES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
             
             # Mapping: ID_CITYSCAPES : ID_COCO 
@@ -154,7 +153,6 @@ class MaskClassificationSemantic(LightningModule):
                         mapped_logits[city_id] = logit_b[coco_id]
                     metric_logits.append(mapped_logits)
                 else:
-                    # Cityscapes --> reset the channels of the non-shared classes
                     mapped_logits = torch.full_like(logit_b, -1000.0)
                     for c in SHARED_CLASSES:
                         mapped_logits[c] = logit_b[c]
