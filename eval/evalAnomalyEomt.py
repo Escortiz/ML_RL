@@ -78,10 +78,6 @@ def main():
     )
     args = parser.parse_args()
     
-    # ---------------------------------------------------------
-    # HACK RAM 1: Non salviamo più le immagini intere, 
-    # ma solo vettori lineari dei pixel che ci interessano!
-    # ---------------------------------------------------------
     ood_out_list = []
     ind_out_list = []
 
