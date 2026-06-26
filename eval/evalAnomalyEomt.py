@@ -167,35 +167,40 @@ def main():
             pred_masks = result[0][-1][0]
             pred_logits = result[1][-1][0]
             
+            # Create Probability Map for MSP and RbA
             prob_queries = torch.nn.functional.softmax(pred_logits, dim=-1)
             known_probs = prob_queries[:, :-1]
             mask_probs = pred_masks.sigmoid()
             
-            logits = torch.einsum("qc,qhw->chw", known_probs, mask_probs)
+            prob_map = torch.einsum("qc,qhw->chw", known_probs, mask_probs)
+            prob_map = F.interpolate(
+                prob_map.unsqueeze(0), size=(560, 1120), mode='bilinear', align_corners=False
+            ).squeeze(0)
+
+            # Create True Logit Map for MaxLogit and Max Entropy
+            known_logits = pred_logits[:, :-1] 
             
-            logits = F.interpolate(
-                logits.unsqueeze(0),
-                size=(560, 1120), 
-                mode='bilinear', 
-                align_corners=False
+            logit_map = torch.einsum("qc,qhw->chw", known_logits, mask_probs)
+            logit_map = F.interpolate(
+                logit_map.unsqueeze(0), size=(560, 1120), mode='bilinear', align_corners=False
             ).squeeze(0)
 
             if args.method == 'max_logit':
-                max_logits = torch.max(logits, dim=0)[0]
-                anomaly_result = - max_logits.data.cpu().numpy()
+                max_logits = torch.max(logit_map, dim=0)[0]
+                anomaly_result = -max_logits.data.cpu().numpy()
                 
             elif args.method == 'msp':
-                max_probs = torch.max(logits, dim=0)[0]
+                max_probs = torch.max(prob_map, dim=0)[0]
                 anomaly_result = 1.0 - max_probs.data.cpu().numpy()
                 
             elif args.method == 'max_entropy':
-                probs = torch.nn.functional.softmax(logits, dim=0)
-                log_probs = torch.nn.functional.log_softmax(logits, dim=0)
+                probs = torch.nn.functional.softmax(logit_map, dim=0)
+                log_probs = torch.nn.functional.log_softmax(logit_map, dim=0)
                 entropy = -torch.sum(probs * log_probs, dim=0)
                 anomaly_result = entropy.data.cpu().numpy()
 
             elif args.method == 'rba':
-                anomaly_result = -torch.sum(logits, dim=0).data.cpu().numpy()
+                anomaly_result = -torch.sum(prob_map, dim=0).data.cpu().numpy()
                         
         pathGT = path.replace("images", "labels_masks")                
         if "RoadObsticle21" in pathGT:
@@ -230,7 +235,7 @@ def main():
                 filename = os.path.basename(path).split('.')[0]
                 
                 save_data = {
-                    'pred_logits': logits.detach().cpu().half().clone(),
+                    'pred_logits': logit_map.detach().cpu().half().clone(),  # Fixed to save raw logits
                     'ood_gts': ood_gts.astype(np.uint8)
                 }
                 torch.save(save_data, f"{cartella_salvataggio}/{filename}.pt")
@@ -247,7 +252,7 @@ def main():
             if len(ind_out_img) > 0:
                 ind_out_list.append(ind_out_img)
             
-        del result, anomaly_result, mask, logits, prob_queries, known_probs, mask_probs
+        del result, anomaly_result, mask, prob_map, logit_map, prob_queries, known_probs, mask_probs, known_logits
         torch.cuda.empty_cache()
 
     file.write( "\n")
