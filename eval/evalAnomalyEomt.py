@@ -9,7 +9,7 @@ import numpy as np
 import os.path as osp
 import torch.nn.functional as F
 from argparse import ArgumentParser
-from ood_metrics import fpr_at_95_tpr, calc_metrics, plot_roc, plot_pr,plot_barcode
+from ood_metrics import fpr_at_95_tpr, calc_metrics, plot_roc, plot_pr, plot_barcode
 from sklearn.metrics import roc_auc_score, roc_curve, auc, precision_recall_curve, average_precision_score
 from torchvision.transforms import Compose, Resize, ToTensor, Normalize
 
@@ -54,7 +54,7 @@ def main():
         nargs="+",
         help="A list of space separated input images; or a single glob pattern"
     )  
-    parser.add_argument('--loadDir',default="")
+    parser.add_argument('--loadDir', default="")
     parser.add_argument('--loadWeights', default="")
     parser.add_argument('--subset', default="val")  
     parser.add_argument('--datadir', default="/home/shyam/ViT-Adapter/segmentation/data/cityscapes/")
@@ -155,20 +155,20 @@ def main():
 
             if args.method == 'max_logit':
                 max_logits = torch.max(logit_map, dim=0)[0]
-                anomaly_result = -max_logits.data.cpu().numpy()
+                anomaly_result = -max_logits.detach().cpu().numpy()
                 
             elif args.method == 'msp':
                 max_probs = torch.max(prob_map, dim=0)[0]
-                anomaly_result = 1.0 - max_probs.data.cpu().numpy()
+                anomaly_result = 1.0 - max_probs.detach().cpu().numpy()
                 
             elif args.method == 'max_entropy':
                 probs = torch.nn.functional.softmax(logit_map, dim=0)
                 log_probs = torch.nn.functional.log_softmax(logit_map, dim=0)
                 entropy = -torch.sum(probs * log_probs, dim=0)
-                anomaly_result = entropy.data.cpu().numpy()
+                anomaly_result = entropy.detach().cpu().numpy()
 
             elif args.method == 'rba':
-                anomaly_result = -torch.sum(prob_map, dim=0).data.cpu().numpy()
+                anomaly_result = -torch.sum(prob_map, dim=0).detach().cpu().numpy()
                         
         pathGT = path.replace("images", "labels_masks")                
         if "RoadObsticle21" in pathGT:
@@ -207,9 +207,8 @@ def main():
                 ood_out_list.append(ood_out_img)
             if len(ind_out_img) > 0:
                 ind_out_list.append(ind_out_img)
-            
+
         del result, anomaly_result, mask, prob_map, logit_map, prob_queries, known_probs, mask_probs, known_logits
-        torch.cuda.empty_cache()
 
     file.write( "\n")
 
@@ -226,12 +225,13 @@ def main():
         prc_auc = average_precision_score(val_label, val_out)
         fpr = fpr_at_95_tpr(val_out, val_label)
         
-        # Formattazione dell'output
-        print(f"[{args.method.upper()}] AUPRC score: {prc_auc*100.0:.10f}% | FPR@TPR95: {fpr*100.0:.10f}%")
+        print(f"[{args.method.upper()}] AUPRC score: {prc_auc*100.0:.9f}% | FPR@TPR95: {fpr*100.0:.9f}%")
 
         file.write(('    AUPRC score:' + str(prc_auc*100.0) + '   FPR@TPR95:' + str(fpr*100.0) ))
         
     file.close()
+    
+    torch.cuda.empty_cache()
 
 if __name__ == '__main__':
     main()
