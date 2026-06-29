@@ -1,5 +1,4 @@
- START CHECKPOINT EVALUATION: ERFNET 
-
+START CHECKPOINT EVALUATION: ERFNET 
 Loading model: ../trained_models/erfnet.py
 Loading weights: ../trained_models/erfnet_pretrained.pth
 Model and weights LOADED successfully
@@ -65,504 +64,278 @@ AUPRC score: 30.968608455992864
 FPR@TPR95: 62.65850311039195
 
 ________________________________________________________________________________________________
+START CHECKPOINT EVALUATION: COCO 
 
- START CHECKPOINT EVALUATION: COCO 
-Loading config: /content/ML_RL/eomt/configs/dinov2/cityscapes/semantic/eomt_base_640.yaml
-Loading weights: /content/ML_RL/eomt/dataset_trained/eomt_coco.bin
-DINOv2 Encoder Initialization: vit_base_patch14_reg4_dinov2...
+[Normal Test] Dataset: FS_LostFound_full | Model: COCO | Method: msp
 Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-EoMT Initialization (Classes: 133, Queries: 200, Blocks: 3)...
-Resizing pos_embed from torch.Size([1, 1600, 768]) to torch.Size([1, 2450, 768])...
+model.safetensors: 100% 346M/346M [00:02<00:00, 154MB/s]
+[MSP] AUPRC score: 1.339942394% | FPR@TPR95: 95.328208538%
 
-[Test] Dataset: FS_LostFound_full | Model: COCO | Method: msp
-AUPRC score: 1.3399423944881952
-FPR@TPR95: 95.32820853820414
-Analyzing: saved_logits_coco_msp
-Temperature 0.50 | AUPRC: 1.24% | FPR@TPR95: 95.18%
-Temperature 0.75 | AUPRC: 0.96% | FPR@TPR95: 95.00%
-Temperature 1.10 | AUPRC: 0.52% | FPR@TPR95: 94.66%
+[Normal Test] Dataset: FS_LostFound_full | Model: COCO | Method: max_logit
+[MAX_LOGIT] AUPRC score: 10.147462524% | FPR@TPR95: 69.130217524%
 
-[Test] Dataset: FS_LostFound_full | Model: COCO | Method: max_logit
-AUPRC score: 1.339942415968323
-FPR@TPR95: 95.32820853820414
-Analyzing: saved_logits_coco_max_logit
-Temperature 0.50 | AUPRC: 1.24% | FPR@TPR95: 95.18%
-Temperature 0.75 | AUPRC: 0.96% | FPR@TPR95: 95.00%
-Temperature 1.10 | AUPRC: 0.52% | FPR@TPR95: 94.66%
+[Normal Test] Dataset: FS_LostFound_full | Model: COCO | Method: max_entropy
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MAX_ENTROPY] AUPRC score: 18.437682922% | FPR@TPR95: 59.842154097%
 
-[Test] Dataset: FS_LostFound_full | Model: COCO | Method: max_entropy
-AUPRC score: 1.2314366347707806
-FPR@TPR95: 94.87818056769919
-Analyzing: saved_logits_coco_max_entropy
-Temperature 0.50 | AUPRC: 1.24% | FPR@TPR95: 95.18%
-Temperature 0.75 | AUPRC: 0.96% | FPR@TPR95: 95.00%
-Temperature 1.10 | AUPRC: 0.52% | FPR@TPR95: 94.66%
+[Normal Test] Dataset: FS_LostFound_full | Model: COCO | Method: rba
+[RBA] AUPRC score: 0.229481056% | FPR@TPR95: 95.814727136%
 
-[Test] Dataset: FS_LostFound_full | Model: COCO | Method: rba
-AUPRC score: 0.22948105568997315
-FPR@TPR95: 95.81472713606811
-Analyzing: saved_logits_coco_rba
-Temperature 0.50 | AUPRC: 1.24% | FPR@TPR95: 95.18%
-Temperature 0.75 | AUPRC: 0.96% | FPR@TPR95: 95.00%
-Temperature 1.10 | AUPRC: 0.52% | FPR@TPR95: 94.66%
+[Normal Test] Dataset: RoadAnomaly | Model: COCO | Method: msp
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MSP] AUPRC score: 21.942860409% | FPR@TPR95: 93.162727184%
 
-[Test] Dataset: RoadObsticle21 | Model: COCO | Method: msp
-AUPRC score: 3.775573309066929
-FPR@TPR95: 99.99790624910236
-Temperature 0.50 | AUPRC: 6.06% | FPR@TPR95: 100.00%
-Temperature 0.75 | AUPRC: 4.64% | FPR@TPR95: 100.00%
-Temperature 1.10 | AUPRC: 2.14% | FPR@TPR95: 100.00%
+[Normal Test] Dataset: RoadAnomaly | Model: COCO | Method: max_logit
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MAX_LOGIT] AUPRC score: 22.039201719% | FPR@TPR95: 89.848899223%
 
-[Test] Dataset: RoadObsticle21 | Model: COCO | Method: max_logit
-AUPRC score: 3.775573309066929
-FPR@TPR95: 99.99790624910236
-Analyzing: saved_logits_coco_max_logit
-Temperature 0.50 | AUPRC: 6.06% | FPR@TPR95: 100.00%
-Temperature 0.75 | AUPRC: 4.64% | FPR@TPR95: 100.00%
-Temperature 1.10 | AUPRC: 2.14% | FPR@TPR95: 100.00%
+[Normal Test] Dataset: RoadAnomaly | Model: COCO | Method: max_entropy
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MAX_ENTROPY] AUPRC score: 16.456004681% | FPR@TPR95: 92.180314355%
 
-[Test] Dataset: RoadObsticle21 | Model: COCO | Method: max_entropy
-AUPRC score: 9.744211337578529
-FPR@TPR95: 99.99764669320597
-Analyzing: saved_logits_coco_max_entropy
-Temperature 0.50 | AUPRC: 6.06% | FPR@TPR95: 100.00%
-Temperature 0.75 | AUPRC: 4.64% | FPR@TPR95: 100.00%
-Temperature 1.10 | AUPRC: 2.14% | FPR@TPR95: 100.00%
+[Normal Test] Dataset: RoadAnomaly | Model: COCO | Method: rba
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[RBA] AUPRC score: 18.232973952% | FPR@TPR95: 85.654843138%
 
-[Test] Dataset: RoadObsticle21 | Model: COCO | Method: rba
-AUPRC score: 50.6426181640655
-FPR@TPR95: 99.99532799386479
-Analyzing: saved_logits_coco_rba
-Temperature 0.50 | AUPRC: 6.06% | FPR@TPR95: 100.00%
-Temperature 0.75 | AUPRC: 4.64% | FPR@TPR95: 100.00%
-Temperature 1.10 | AUPRC: 2.14% | FPR@TPR95: 100.00%
+[Normal Test] Dataset: RoadAnomaly21 | Model: COCO | Method: msp
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MSP] AUPRC score: 42.509988059% | FPR@TPR95: 74.047901400%
 
-[Test] Dataset: RoadAnomaly | Model: COCO | Method: msp
-AUPRC score: 21.94286040854306
-FPR@TPR95: 93.16272718381416
-Temperature 0.50 | AUPRC: 22.51% | FPR@TPR95: 92.19%
-Temperature 0.75 | AUPRC: 21.39% | FPR@TPR95: 91.48%
-Temperature 1.10 | AUPRC: 15.65% | FPR@TPR95: 90.90%
+[Normal Test] Dataset: RoadAnomaly21 | Model: COCO | Method: max_logit
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MAX_LOGIT] AUPRC score: 41.625781198% | FPR@TPR95: 40.859073973%
 
-[Test] Dataset: RoadAnomaly | Model: COCO | Method: max_logit
-AUPRC score: 21.942858750982168
-FPR@TPR95: 93.16272718381416
-Analyzing: saved_logits_coco_max_logit
-Temperature 0.50 | AUPRC: 22.51% | FPR@TPR95: 92.19%
-Temperature 0.75 | AUPRC: 21.39% | FPR@TPR95: 91.48%
-Temperature 1.10 | AUPRC: 15.65% | FPR@TPR95: 90.90%
+[Normal Test] Dataset: RoadAnomaly21 | Model: COCO | Method: max_entropy
+[MAX_ENTROPY] AUPRC score: 33.153064837% | FPR@TPR95: 65.253646063%
 
-[Test] Dataset: RoadAnomaly | Model: COCO | Method: max_entropy
-AUPRC score: 23.260205291039785
-FPR@TPR95: 91.01977070372207
-Analyzing: saved_logits_coco_max_entropy
-Temperature 0.50 | AUPRC: 22.51% | FPR@TPR95: 92.19%
-Temperature 0.75 | AUPRC: 21.39% | FPR@TPR95: 91.48%
-Temperature 1.10 | AUPRC: 15.65% | FPR@TPR95: 90.90%
+[Normal Test] Dataset: RoadAnomaly21 | Model: COCO | Method: rba
+[RBA] AUPRC score: 29.059700564% | FPR@TPR95: 53.902396272%
 
-[Test] Dataset: RoadAnomaly | Model: COCO | Method: rba
-AUPRC score: 18.232973951850166
-FPR@TPR95: 85.65484313825249
-Analyzing: saved_logits_coco_rba
-Temperature 0.50 | AUPRC: 22.51% | FPR@TPR95: 92.19%
-Temperature 0.75 | AUPRC: 21.39% | FPR@TPR95: 91.48%
-Temperature 1.10 | AUPRC: 15.65% | FPR@TPR95: 90.90%
+[Normal Test] Dataset: RoadObsticle21 | Model: COCO | Method: msp
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MSP] AUPRC score: 3.775573309% | FPR@TPR95: 99.997906249%
 
-[Test] Dataset: fs_static | Model: COCO | Method: msp
-AUPRC score: 4.030936385240388
-FPR@TPR95: 97.01824888152393
-Analyzing: saved_logits_coco_msp
-Temperature 0.50 | AUPRC: 3.59% | FPR@TPR95: 96.71%
-Temperature 0.75 | AUPRC: 3.32% | FPR@TPR95: 96.36%
-Temperature 1.10 | AUPRC: 2.36% | FPR@TPR95: 96.89%
+[Normal Test] Dataset: RoadObsticle21 | Model: COCO | Method: max_logit
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MAX_LOGIT] AUPRC score: 3.335410141% | FPR@TPR95: 100.000000000%
 
-[Test] Dataset: fs_static | Model: COCO | Method: max_logit
-AUPRC score: 4.030935726625815
-FPR@TPR95: 97.01824888152393
-Analyzing: saved_logits_coco_max_logit
-Temperature 0.50 | AUPRC: 3.59% | FPR@TPR95: 96.71%
-Temperature 0.75 | AUPRC: 3.32% | FPR@TPR95: 96.36%
-Temperature 1.10 | AUPRC: 2.36% | FPR@TPR95: 96.89%
+[Normal Test] Dataset: RoadObsticle21 | Model: COCO | Method: max_entropy
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MAX_ENTROPY] AUPRC score: 2.942503981% | FPR@TPR95: 100.000000000%
 
-[Test] Dataset: fs_static | Model: COCO | Method: max_entropy
-AUPRC score: 3.512682110013934
-FPR@TPR95: 96.41361526016422
-Analyzing: saved_logits_coco_max_entropy
-Temperature 0.50 | AUPRC: 3.59% | FPR@TPR95: 96.71%
-Temperature 0.75 | AUPRC: 3.32% | FPR@TPR95: 96.36%
-Temperature 1.10 | AUPRC: 2.36% | FPR@TPR95: 96.89%
+[Normal Test] Dataset: RoadObsticle21 | Model: COCO | Method: rba
+[RBA] AUPRC score: 50.642618164% | FPR@TPR95: 99.995327994%
 
-[Test] Dataset: fs_static | Model: COCO | Method: rba
-AUPRC score: 1.6019072623715374
-FPR@TPR95: 98.9212321580137
-Analyzing: saved_logits_coco_rba
-Temperature 0.50 | AUPRC: 3.59% | FPR@TPR95: 96.71%
-Temperature 0.75 | AUPRC: 3.32% | FPR@TPR95: 96.36%
-Temperature 1.10 | AUPRC: 2.36% | FPR@TPR95: 96.89%
+[Normal Test] Dataset: fs_static | Model: COCO | Method: msp
+[MSP] AUPRC score: 4.030936385% | FPR@TPR95: 97.018248882%
 
-[Test] Dataset: RoadAnomaly21 | Model: COCO | Method: msp
-AUPRC score: 42.509988059077756
-FPR@TPR95: 74.04790140041075
-Analyzing: saved_logits_coco_msp
-Temperature 0.50 | AUPRC: 45.55% | FPR@TPR95: 66.41%
-Temperature 0.75 | AUPRC: 40.61% | FPR@TPR95: 66.40%
-Temperature 1.10 | AUPRC: 30.36% | FPR@TPR95: 72.17%
+[Normal Test] Dataset: fs_static | Model: COCO | Method: max_logit
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MAX_LOGIT] AUPRC score: 4.268901087% | FPR@TPR95: 99.705535330%
 
-[Test] Dataset: RoadAnomaly21 | Model: COCO | Method: max_logit
-AUPRC score: 42.50995421787433
-FPR@TPR95: 74.04790140041075
-Analyzing: saved_logits_coco_max_logit
-Temperature 0.50 | AUPRC: 45.55% | FPR@TPR95: 66.41%
-Temperature 0.75 | AUPRC: 40.61% | FPR@TPR95: 66.40%
-Temperature 1.10 | AUPRC: 30.36% | FPR@TPR95: 72.17%
+[Normal Test] Dataset: fs_static | Model: COCO | Method: max_entropy
+[MAX_ENTROPY] AUPRC score: 4.176925158% | FPR@TPR95: 99.863114929%
 
-[Test] Dataset: RoadAnomaly21 | Model: COCO | Method: max_entropy
-AUPRC score: 47.95196362522983
-FPR@TPR95: 59.53552738203144
-Analyzing: saved_logits_coco_max_entropy
-Temperature 0.50 | AUPRC: 45.55% | FPR@TPR95: 66.41%
-Temperature 0.75 | AUPRC: 40.61% | FPR@TPR95: 66.40%
-Temperature 1.10 | AUPRC: 30.36% | FPR@TPR95: 72.17%
-
-[Test] Dataset: RoadAnomaly21 | Model: COCO | Method: rba
-AUPRC score: 29.059700563635822
-FPR@TPR95: 53.90239627218971
-Analyzing: saved_logits_coco_rba
-Temperature 0.50 | AUPRC: 45.55% | FPR@TPR95: 66.41%
-Temperature 0.75 | AUPRC: 40.61% | FPR@TPR95: 66.40%
-Temperature 1.10 | AUPRC: 30.36% | FPR@TPR95: 72.17%
+[Normal Test] Dataset: fs_static | Model: COCO | Method: rba
+[RBA] AUPRC score: 1.601907262% | FPR@TPR95: 98.921232158%
 
 ________________________________________________________________________________________________
+START CHECKPOINT EVALUATION: CITYSCAPES
 
- START CHECKPOINT EVALUATION: CITYSCAPES 
-Loading weights: /content/ML_RL/eomt/dataset_trained/eomt_cityscapes.bin
-model.safetensors: 100% 346M/346M [00:02<00:00, 137MB/s]
-EoMT Initialization (Classes: 19, Queries: 100, Blocks: 3)...
-Resizing pos_embed from torch.Size([1, 4096, 768]) to torch.Size([1, 2450, 768])...
+[Normal Test] Dataset: FS_LostFound_full | Model: Cityscapes | Method: msp
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MSP] AUPRC score: 18.848179635% | FPR@TPR95: 18.180045958%
 
-[Test] Dataset: FS_LostFound_full | Model: Cityscapes | Method: msp
-AUPRC score: 18.84817963536754
-FPR@TPR95: 18.18004595772788
-Analyzing: saved_logits_cityscapes_msp
-Temperature 0.50 | AUPRC: 18.75% | FPR@TPR95: 18.37%
-Temperature 0.75 | AUPRC: 16.79% | FPR@TPR95: 24.63%
-Temperature 1.10 | AUPRC: 15.08% | FPR@TPR95: 16.32%
+[Normal Test] Dataset: FS_LostFound_full | Model: Cityscapes | Method: max_logit
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MAX_LOGIT] AUPRC score: 3.069110314% | FPR@TPR95: 53.158959263%
 
-[Test] Dataset: FS_LostFound_full | Model: Cityscapes | Method: max_logit
-AUPRC score: 18.847516956481005
-FPR@TPR95: 18.18004595772788
-Analyzing: saved_logits_cityscapes_max_logit
-Temperature 0.50 | AUPRC: 18.75% | FPR@TPR95: 18.37%
-Temperature 0.75 | AUPRC: 16.79% | FPR@TPR95: 24.63%
-Temperature 1.10 | AUPRC: 15.08% | FPR@TPR95: 16.32%
+[Normal Test] Dataset: FS_LostFound_full | Model: Cityscapes | Method: max_entropy
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MAX_ENTROPY] AUPRC score: 3.136085405% | FPR@TPR95: 55.030672639%
 
-[Test] Dataset: FS_LostFound_full | Model: Cityscapes | Method: max_entropy
-AUPRC score: 21.85859041618297
-FPR@TPR95: 18.29961549789167
-Analyzing: saved_logits_cityscapes_max_entropy
-Temperature 0.50 | AUPRC: 18.75% | FPR@TPR95: 18.37%
-Temperature 0.75 | AUPRC: 16.79% | FPR@TPR95: 24.63%
-Temperature 1.10 | AUPRC: 15.08% | FPR@TPR95: 16.32%
+[Normal Test] Dataset: FS_LostFound_full | Model: Cityscapes | Method: rba
+[RBA] AUPRC score: 19.619166372% | FPR@TPR95: 13.672929702%
 
-[Test] Dataset: FS_LostFound_full | Model: Cityscapes | Method: rba
-AUPRC score: 19.619166371880958
-FPR@TPR95: 13.672929702094864
-Analyzing: saved_logits_cityscapes_rba
-Temperature 0.50 | AUPRC: 18.75% | FPR@TPR95: 18.37%
-Temperature 0.75 | AUPRC: 16.79% | FPR@TPR95: 24.63%
-Temperature 1.10 | AUPRC: 15.08% | FPR@TPR95: 16.32%
+[Normal Test] Dataset: RoadAnomaly | Model: Cityscapes | Method: msp
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MSP] AUPRC score: 74.837449142% | FPR@TPR95: 14.324344090%
 
-[Test] Dataset: RoadObsticle21 | Model: Cityscapes | Method: msp
-AUPRC score: 87.51474335526922
-FPR@TPR95: 1.1441223913334633
-Analyzing: saved_logits_cityscapes_msp
-Temperature 0.50 | AUPRC: 87.20% | FPR@TPR95: 1.12%
-Temperature 0.75 | AUPRC: 86.65% | FPR@TPR95: 1.08%
-Temperature 1.10 | AUPRC: 84.53% | FPR@TPR95: 5.41%
+[Normal Test] Dataset: RoadAnomaly | Model: Cityscapes | Method: max_logit
+[MAX_LOGIT] AUPRC score: 40.252649387% | FPR@TPR95: 62.747037702%
 
-[Test] Dataset: RoadObsticle21 | Model: Cityscapes | Method: max_logit
-AUPRC score: 87.51474368932837
-FPR@TPR95: 1.1441223913334633
-Analyzing: saved_logits_cityscapes_max_logit
-Temperature 0.50 | AUPRC: 87.20% | FPR@TPR95: 1.12%
-Temperature 0.75 | AUPRC: 86.65% | FPR@TPR95: 1.08%
-Temperature 1.10 | AUPRC: 84.53% | FPR@TPR95: 5.41%
+[Normal Test] Dataset: RoadAnomaly | Model: Cityscapes | Method: max_entropy
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MAX_ENTROPY] AUPRC score: 41.456021290% | FPR@TPR95: 59.942926190%
 
-[Test] Dataset: RoadObsticle21 | Model: Cityscapes | Method: max_entropy
-AUPRC score: 87.80671462125292
-FPR@TPR95: 1.114580604391478
-Analyzing: saved_logits_cityscapes_max_entropy
-Temperature 0.50 | AUPRC: 87.20% | FPR@TPR95: 1.12%
-Temperature 0.75 | AUPRC: 86.65% | FPR@TPR95: 1.08%
-Temperature 1.10 | AUPRC: 84.53% | FPR@TPR95: 5.41%
+[Normal Test] Dataset: RoadAnomaly | Model: Cityscapes | Method: rba
+[RBA] AUPRC score: 75.035522484% | FPR@TPR95: 11.569118288%
 
-[Test] Dataset: RoadObsticle21 | Model: Cityscapes | Method: rba
-AUPRC score: 85.30047907769884
-FPR@TPR95: 99.92697827447931
-Analyzing: saved_logits_cityscapes_rba
-Temperature 0.50 | AUPRC: 87.20% | FPR@TPR95: 1.12%
-Temperature 0.75 | AUPRC: 86.65% | FPR@TPR95: 1.08%
-Temperature 1.10 | AUPRC: 84.53% | FPR@TPR95: 5.41%
+[Normal Test] Dataset: RoadAnomaly21 | Model: Cityscapes | Method: msp
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MSP] AUPRC score: 72.047630564% | FPR@TPR95: 47.079930096%
 
-[Test] Dataset: RoadAnomaly | Model: Cityscapes | Method: msp
-AUPRC score: 74.83744914186066
-FPR@TPR95: 14.324344089797087
-Analyzing: saved_logits_cityscapes_msp
-Temperature 0.50 | AUPRC: 69.41% | FPR@TPR95: 14.22%
-Temperature 0.75 | AUPRC: 65.20% | FPR@TPR95: 14.09%
-Temperature 1.10 | AUPRC: 62.06% | FPR@TPR95: 14.29%
+[Normal Test] Dataset: RoadAnomaly21 | Model: Cityscapes | Method: max_logit
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MAX_LOGIT] AUPRC score: 63.407963274% | FPR@TPR95: 36.145969708%
 
-[Test] Dataset: RoadAnomaly | Model: Cityscapes | Method: max_logit
-AUPRC score: 74.77357478075226
-FPR@TPR95: 14.324344089797087
-Analyzing: saved_logits_cityscapes_max_logit
-Temperature 0.50 | AUPRC: 69.41% | FPR@TPR95: 14.22%
-Temperature 0.75 | AUPRC: 65.20% | FPR@TPR95: 14.09%
-Temperature 1.10 | AUPRC: 62.06% | FPR@TPR95: 14.29%
+[Normal Test] Dataset: RoadAnomaly21 | Model: Cityscapes | Method: max_entropy
+[MAX_ENTROPY] AUPRC score: 61.690268212% | FPR@TPR95: 28.985307166%
 
-[Test] Dataset: RoadAnomaly | Model: Cityscapes | Method: max_entropy
-AUPRC score: 79.14575305800975
-FPR@TPR95: 14.008077178369764
-Analyzing: saved_logits_cityscapes_max_entropy
-Temperature 0.50 | AUPRC: 69.41% | FPR@TPR95: 14.22%
-Temperature 0.75 | AUPRC: 65.20% | FPR@TPR95: 14.09%
-Temperature 1.10 | AUPRC: 62.06% | FPR@TPR95: 14.29%
+[Normal Test] Dataset: RoadAnomaly21 | Model: Cityscapes | Method: rba
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[RBA] AUPRC score: 71.287014098% | FPR@TPR95: 80.507251649%
 
-[Test] Dataset: RoadAnomaly | Model: Cityscapes | Method: rba
-AUPRC score: 75.0355224836222
-FPR@TPR95: 11.569118288008532
-Analyzing: saved_logits_cityscapes_rba
-Temperature 0.50 | AUPRC: 69.41% | FPR@TPR95: 14.22%
-Temperature 0.75 | AUPRC: 65.20% | FPR@TPR95: 14.09%
-Temperature 1.10 | AUPRC: 62.06% | FPR@TPR95: 14.29%
+[Normal Test] Dataset: RoadObsticle21 | Model: Cityscapes | Method: msp
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MSP] AUPRC score: 87.514743355% | FPR@TPR95: 1.144122391%
 
-[Test] Dataset: fs_static | Model: Cityscapes | Method: msp
-AUPRC score: 66.10364688037403
-FPR@TPR95: 30.156269917268524
-Analyzing: saved_logits_cityscapes_msp
-Temperature 0.50 | AUPRC: 53.87% | FPR@TPR95: 30.23%
-Temperature 0.75 | AUPRC: 48.88% | FPR@TPR95: 67.95%
-Temperature 1.10 | AUPRC: 43.93% | FPR@TPR95: 64.98%
+[Normal Test] Dataset: RoadObsticle21 | Model: Cityscapes | Method: max_logit
+[MAX_LOGIT] AUPRC score: 77.131380277% | FPR@TPR95: 20.360812978%
 
-[Test] Dataset: fs_static | Model: Cityscapes | Method: max_logit
-AUPRC score: 66.10365580512898
-FPR@TPR95: 30.156269917268524
-Analyzing: saved_logits_cityscapes_max_logit
-Temperature 0.50 | AUPRC: 53.87% | FPR@TPR95: 30.23%
-Temperature 0.75 | AUPRC: 48.88% | FPR@TPR95: 67.95%
-Temperature 1.10 | AUPRC: 43.93% | FPR@TPR95: 64.98%
+[Normal Test] Dataset: RoadObsticle21 | Model: Cityscapes | Method: max_entropy
+[MAX_ENTROPY] AUPRC score: 72.669370301% | FPR@TPR95: 30.625017520%
 
-[Test] Dataset: fs_static | Model: Cityscapes | Method: max_entropy
-AUPRC score: 66.05978802452425
-FPR@TPR95: 30.26232554658813
-Analyzing: saved_logits_cityscapes_max_entropy
-Temperature 0.50 | AUPRC: 53.87% | FPR@TPR95: 30.23%
-Temperature 0.75 | AUPRC: 48.88% | FPR@TPR95: 67.95%
-Temperature 1.10 | AUPRC: 43.93% | FPR@TPR95: 64.98%
+[Normal Test] Dataset: RoadObsticle21 | Model: Cityscapes | Method: rba
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[RBA] AUPRC score: 85.300479078% | FPR@TPR95: 99.926978274%
 
-[Test] Dataset: fs_static | Model: Cityscapes | Method: rba
-AUPRC score: 68.18459738368314
-FPR@TPR95: 31.78266257154671
-Analyzing: saved_logits_cityscapes_rba
-Temperature 0.50 | AUPRC: 53.87% | FPR@TPR95: 30.23%
-Temperature 0.75 | AUPRC: 48.88% | FPR@TPR95: 67.95%
-Temperature 1.10 | AUPRC: 43.93% | FPR@TPR95: 64.98%
+[Normal Test] Dataset: fs_static | Model: Cityscapes | Method: msp
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MSP] AUPRC score: 66.103646880% | FPR@TPR95: 30.156269917%
 
-[Test] Dataset: RoadAnomaly21 | Model: Cityscapes | Method: msp
-AUPRC score: 72.04763056383031
-FPR@TPR95: 47.07993009580125
-Analyzing: saved_logits_cityscapes_msp
-Temperature 0.50 | AUPRC: 72.99% | FPR@TPR95: 85.19%
-Temperature 0.75 | AUPRC: 71.16% | FPR@TPR95: 87.39%
-Temperature 1.10 | AUPRC: 70.43% | FPR@TPR95: 84.51%
+[Normal Test] Dataset: fs_static | Model: Cityscapes | Method: max_logit
+[MAX_LOGIT] AUPRC score: 12.527572334% | FPR@TPR95: 68.283703225%
 
-[Test] Dataset: RoadAnomaly21 | Model: Cityscapes | Method: max_logit
-AUPRC score: 72.00504629927298
-FPR@TPR95: 47.07993009580125
-Analyzing: saved_logits_cityscapes_max_logit
-Temperature 0.50 | AUPRC: 72.99% | FPR@TPR95: 85.19%
-Temperature 0.75 | AUPRC: 71.16% | FPR@TPR95: 87.39%
-Temperature 1.10 | AUPRC: 70.43% | FPR@TPR95: 84.51%
+[Normal Test] Dataset: fs_static | Model: Cityscapes | Method: max_entropy
+[MAX_ENTROPY] AUPRC score: 12.061045545% | FPR@TPR95: 73.480992513%
 
-[Test] Dataset: RoadAnomaly21 | Model: Cityscapes | Method: max_entropy
-AUPRC score: 75.81363498137249
-FPR@TPR95: 46.90827403790056
-Analyzing: saved_logits_cityscapes_max_entropy
-Temperature 0.50 | AUPRC: 72.99% | FPR@TPR95: 85.19%
-Temperature 0.75 | AUPRC: 71.16% | FPR@TPR95: 87.39%
-Temperature 1.10 | AUPRC: 70.43% | FPR@TPR95: 84.51%
-
-[Test] Dataset: RoadAnomaly21 | Model: Cityscapes | Method: rba
-AUPRC score: 71.2870140983216
-FPR@TPR95: 80.5072516492985
-Analyzing: saved_logits_cityscapes_rba
-Temperature 0.50 | AUPRC: 72.99% | FPR@TPR95: 85.19%
-Temperature 0.75 | AUPRC: 71.16% | FPR@TPR95: 87.39%
-Temperature 1.10 | AUPRC: 70.43% | FPR@TPR95: 84.51%
- START CHECKPOINT EVALUATION: FINETUNED 
+[Normal Test] Dataset: fs_static | Model: Cityscapes | Method: rba
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[RBA] AUPRC score: 68.184597384% | FPR@TPR95: 31.782662572%
 
 ________________________________________________________________________________________________
+START CHECKPOINT EVALUATION: FINETUNED 
 
- START CHECKPOINT EVALUATION: FINETUNED 
-Loading weights: /content/ML_RL/eomt/dataset_trained/model.ckpt
-EoMT Initialization (Classes: 19, Queries: 200, Blocks: 3)...
+[Normal Test] Dataset: FS_LostFound_full | Model: FineTuned | Method: msp
+[MSP] AUPRC score: 32.931753414% | FPR@TPR95: 18.864448134%
 
-[Test] Dataset: FS_LostFound_full | Model: FineTuned | Method: msp
-AUPRC score: 32.931753413651506
-FPR@TPR95: 18.864448133954692
-Analyzing: saved_logits_finetuned_msp
-Temperature 0.50 | AUPRC: 36.12% | FPR@TPR95: 18.32%
-Temperature 0.75 | AUPRC: 32.32% | FPR@TPR95: 18.95%
-Temperature 1.10 | AUPRC: 28.12% | FPR@TPR95: 22.53%
+   [Temperature Test] Dataset: FS_LostFound_full | Method: MSP(t=0.5)
+   Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+   [MSP] AUPRC score: 29.709798520% | FPR@TPR95: 18.741952473%
+   
+   [Temperature Test] Dataset: FS_LostFound_full | Method: MSP(t=0.75)
+   [MSP] AUPRC score: 31.861256652% | FPR@TPR95: 18.659433725%
+   
+   [Temperature Test] Dataset: FS_LostFound_full | Method: MSP(t=1.1)
+   Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+   [MSP] AUPRC score: 33.329019532% | FPR@TPR95: 20.976708449%
 
-[Test] Dataset: FS_LostFound_full | Model: FineTuned | Method: max_logit
-AUPRC score: 32.93173628693864
-FPR@TPR95: 18.864448133954692
-Analyzing: saved_logits_finetuned_max_logit
-Temperature 0.50 | AUPRC: 36.12% | FPR@TPR95: 18.32%
-Temperature 0.75 | AUPRC: 32.32% | FPR@TPR95: 18.95%
-Temperature 1.10 | AUPRC: 28.12% | FPR@TPR95: 22.53%
+[Normal Test] Dataset: FS_LostFound_full | Model: FineTuned | Method: max_logit
+[MAX_LOGIT] AUPRC score: 11.583501342% | FPR@TPR95: 40.442764495%
 
-[Test] Dataset: FS_LostFound_full | Model: FineTuned | Method: max_entropy
-AUPRC score: 33.54913520442363
-FPR@TPR95: 18.357831022566394
-Analyzing: saved_logits_finetuned_max_entropy
-Temperature 0.50 | AUPRC: 36.12% | FPR@TPR95: 18.32%
-Temperature 0.75 | AUPRC: 32.32% | FPR@TPR95: 18.95%
-Temperature 1.10 | AUPRC: 28.12% | FPR@TPR95: 22.53%
+[Normal Test] Dataset: FS_LostFound_full | Model: FineTuned | Method: max_entropy
+[MAX_ENTROPY] AUPRC score: 7.086704863% | FPR@TPR95: 41.074134209%
 
-[Test] Dataset: FS_LostFound_full | Model: FineTuned | Method: rba
-AUPRC score: 33.59314353556844
-FPR@TPR95: 63.00376183037587
-Analyzing: saved_logits_finetuned_rba
-Temperature 0.50 | AUPRC: 36.12% | FPR@TPR95: 18.32%
-Temperature 0.75 | AUPRC: 32.32% | FPR@TPR95: 18.95%
-Temperature 1.10 | AUPRC: 28.12% | FPR@TPR95: 22.53%
+[Normal Test] Dataset: FS_LostFound_full | Model: FineTuned | Method: rba
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[RBA] AUPRC score: 33.593143536% | FPR@TPR95: 63.003761830%
 
-[Test] Dataset: RoadObsticle21 | Model: FineTuned | Method: msp
-AUPRC score: 77.91576583907982
-FPR@TPR95: 0.8190718904078869
-Analyzing: saved_logits_finetuned_msp
-Temperature 0.50 | AUPRC: 77.54% | FPR@TPR95: 0.77%
-Temperature 0.75 | AUPRC: 77.33% | FPR@TPR95: 0.79%
-Temperature 1.10 | AUPRC: 73.24% | FPR@TPR95: 0.80%
+[Normal Test] Dataset: RoadAnomaly | Model: FineTuned | Method: msp
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MSP] AUPRC score: 61.677256310% | FPR@TPR95: 25.480652791%
 
-[Test] Dataset: RoadObsticle21 | Model: FineTuned | Method: max_logit
-AUPRC score: 77.91570942047092
-FPR@TPR95: 0.8190718904078869
-Analyzing: saved_logits_finetuned_max_logit
-Temperature 0.50 | AUPRC: 77.54% | FPR@TPR95: 0.77%
-Temperature 0.75 | AUPRC: 77.33% | FPR@TPR95: 0.79%
-Temperature 1.10 | AUPRC: 73.24% | FPR@TPR95: 0.80%
+   [Temperature Test] Dataset: RoadAnomaly | Method: MSP(t=0.5)
+   [MSP] AUPRC score: 64.527635958% | FPR@TPR95: 32.525644187%
+   
+   [Temperature Test] Dataset: RoadAnomaly | Method: MSP(t=0.75)
+   [MSP] AUPRC score: 62.490706312% | FPR@TPR95: 28.814678120%
+   
+   [Temperature Test] Dataset: RoadAnomaly | Method: MSP(t=1.1)
+   [MSP] AUPRC score: 61.147814985% | FPR@TPR95: 24.449798174%
 
-[Test] Dataset: RoadObsticle21 | Model: FineTuned | Method: max_entropy
-AUPRC score: 78.06099284369782
-FPR@TPR95: 0.7922935085762459
-Analyzing: saved_logits_finetuned_max_entropy
-Temperature 0.50 | AUPRC: 77.54% | FPR@TPR95: 0.77%
-Temperature 0.75 | AUPRC: 77.33% | FPR@TPR95: 0.79%
-Temperature 1.10 | AUPRC: 73.24% | FPR@TPR95: 0.80%
+[Normal Test] Dataset: RoadAnomaly | Model: FineTuned | Method: max_logit
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MAX_LOGIT] AUPRC score: 43.931418028% | FPR@TPR95: 38.217952496%
 
-[Test] Dataset: RoadObsticle21 | Model: FineTuned | Method: rba
-AUPRC score: 65.82509533399046
-FPR@TPR95: 33.24546443374767
-Analyzing: saved_logits_finetuned_rba
-Temperature 0.50 | AUPRC: 77.54% | FPR@TPR95: 0.77%
-Temperature 0.75 | AUPRC: 77.33% | FPR@TPR95: 0.79%
-Temperature 1.10 | AUPRC: 73.24% | FPR@TPR95: 0.80%
+[Normal Test] Dataset: RoadAnomaly | Model: FineTuned | Method: max_entropy
+[MAX_ENTROPY] AUPRC score: 34.332673731% | FPR@TPR95: 34.769580062%
 
-[Test] Dataset: RoadAnomaly | Model: FineTuned | Method: msp
-AUPRC score: 61.6772563099126
-FPR@TPR95: 25.480652791249547
-Analyzing: saved_logits_finetuned_msp
-Temperature 0.50 | AUPRC: 61.40% | FPR@TPR95: 25.06%
-Temperature 0.75 | AUPRC: 57.15% | FPR@TPR95: 24.37%
-Temperature 1.10 | AUPRC: 55.82% | FPR@TPR95: 23.99%
+[Normal Test] Dataset: RoadAnomaly | Model: FineTuned | Method: rba
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[RBA] AUPRC score: 59.888230209% | FPR@TPR95: 19.971111730%
 
-[Test] Dataset: RoadAnomaly | Model: FineTuned | Method: max_logit
-AUPRC score: 61.67669438986883
-FPR@TPR95: 25.480652791249547
-Analyzing: saved_logits_finetuned_max_logit
-Temperature 0.50 | AUPRC: 61.40% | FPR@TPR95: 25.06%
-Temperature 0.75 | AUPRC: 57.15% | FPR@TPR95: 24.37%
-Temperature 1.10 | AUPRC: 55.82% | FPR@TPR95: 23.99%
+[Normal Test] Dataset: RoadAnomaly21 | Model: FineTuned | Method: msp
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MSP] AUPRC score: 80.484616995% | FPR@TPR95: 14.370710001%
 
-[Test] Dataset: RoadAnomaly | Model: FineTuned | Method: max_entropy
-AUPRC score: 61.98784071598622
-FPR@TPR95: 24.289198576075893
-Analyzing: saved_logits_finetuned_max_entropy
-Temperature 0.50 | AUPRC: 61.40% | FPR@TPR95: 25.06%
-Temperature 0.75 | AUPRC: 57.15% | FPR@TPR95: 24.37%
-Temperature 1.10 | AUPRC: 55.82% | FPR@TPR95: 23.99%
+   [Temperature Test] Dataset: RoadAnomaly21 | Method: MSP(t=0.5)
+   Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+   [MSP] AUPRC score: 84.321769461% | FPR@TPR95: 16.688027791%
+   
+   [Temperature Test] Dataset: RoadAnomaly21 | Method: MSP(t=0.75)
+   Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+   [MSP] AUPRC score: 82.278804504% | FPR@TPR95: 15.600762718%
+   
+   [Temperature Test] Dataset: RoadAnomaly21 | Method: MSP(t=1.1)
+   [MSP] AUPRC score: 79.932834022% | FPR@TPR95: 13.954644096%
 
-[Test] Dataset: RoadAnomaly | Model: FineTuned | Method: rba
-AUPRC score: 59.888230208964764
-FPR@TPR95: 19.971111729864504
-Analyzing: saved_logits_finetuned_rba
-Temperature 0.50 | AUPRC: 61.40% | FPR@TPR95: 25.06%
-Temperature 0.75 | AUPRC: 57.15% | FPR@TPR95: 24.37%
-Temperature 1.10 | AUPRC: 55.82% | FPR@TPR95: 23.99%
+[Normal Test] Dataset: RoadAnomaly21 | Model: FineTuned | Method: max_logit
+[MAX_LOGIT] AUPRC score: 62.295426479% | FPR@TPR95: 27.361545012%
 
-[Test] Dataset: fs_static | Model: FineTuned | Method: msp
-AUPRC score: 85.02640991356698
-FPR@TPR95: 9.170172753643016
-Analyzing: saved_logits_finetuned_msp
-Temperature 0.50 | AUPRC: 84.11% | FPR@TPR95: 8.88%
-Temperature 0.75 | AUPRC: 81.17% | FPR@TPR95: 8.60%
-Temperature 1.10 | AUPRC: 79.50% | FPR@TPR95: 8.38%
+[Normal Test] Dataset: RoadAnomaly21 | Model: FineTuned | Method: max_entropy
+[MAX_ENTROPY] AUPRC score: 60.138168226% | FPR@TPR95: 27.758260841%
 
-[Test] Dataset: fs_static | Model: FineTuned | Method: max_logit
-AUPRC score: 85.02638191433574
-FPR@TPR95: 9.170172753643016
-Analyzing: saved_logits_finetuned_max_logit
-Temperature 0.50 | AUPRC: 84.11% | FPR@TPR95: 8.88%
-Temperature 0.75 | AUPRC: 81.17% | FPR@TPR95: 8.60%
-Temperature 1.10 | AUPRC: 79.50% | FPR@TPR95: 8.38%
+[Normal Test] Dataset: RoadAnomaly21 | Model: FineTuned | Method: rba
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[RBA] AUPRC score: 72.898245201% | FPR@TPR95: 86.812204111%
 
-[Test] Dataset: fs_static | Model: FineTuned | Method: max_entropy
-AUPRC score: 85.71102869586198
-FPR@TPR95: 8.405420081425678
-Analyzing: saved_logits_finetuned_max_entropy
-Temperature 0.50 | AUPRC: 84.11% | FPR@TPR95: 8.88%
-Temperature 0.75 | AUPRC: 81.17% | FPR@TPR95: 8.60%
-Temperature 1.10 | AUPRC: 79.50% | FPR@TPR95: 8.38%
+[Normal Test] Dataset: RoadObsticle21 | Model: FineTuned | Method: msp
+[MSP] AUPRC score: 77.915765839% | FPR@TPR95: 0.819071890%
 
-[Test] Dataset: fs_static | Model: FineTuned | Method: rba
-AUPRC score: 83.90045132449447
-FPR@TPR95: 4.656453350453764
-Analyzing: saved_logits_finetuned_rba
-Temperature 0.50 | AUPRC: 84.11% | FPR@TPR95: 8.88%
-Temperature 0.75 | AUPRC: 81.17% | FPR@TPR95: 8.60%
-Temperature 1.10 | AUPRC: 79.50% | FPR@TPR95: 8.38%
+   [Temperature Test] Dataset: RoadObsticle21 | Method: MSP(t=0.5)
+   [MSP] AUPRC score: 88.532257475% | FPR@TPR95: 0.788859584%
+   
+   [Temperature Test] Dataset: RoadObsticle21 | Method: MSP(t=0.75)
+   [MSP] AUPRC score: 85.812714342% | FPR@TPR95: 0.765361124%
+   
+   [Temperature Test] Dataset: RoadObsticle21 | Method: MSP(t=1.1)
+   Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+   [MSP] AUPRC score: 74.259262398% | FPR@TPR95: 0.863075267%
 
-[Test] Dataset: RoadAnomaly21 | Model: FineTuned | Method: msp
-AUPRC score: 80.48461699511091
-FPR@TPR95: 14.370710001116855
-Analyzing: saved_logits_finetuned_msp
-Temperature 0.50 | AUPRC: 83.07% | FPR@TPR95: 13.22%
-Temperature 0.75 | AUPRC: 82.28% | FPR@TPR95: 12.95%
-Temperature 1.10 | AUPRC: 82.02% | FPR@TPR95: 12.80%
+[Normal Test] Dataset: RoadObsticle21 | Model: FineTuned | Method: max_logit
+[MAX_LOGIT] AUPRC score: 69.518204948% | FPR@TPR95: 1.040248122%
 
-[Test] Dataset: RoadAnomaly21 | Model: FineTuned | Method: max_logit
-AUPRC score: 80.48417027881739
-FPR@TPR95: 14.370710001116855
-Analyzing: saved_logits_finetuned_max_logit
-Temperature 0.50 | AUPRC: 83.07% | FPR@TPR95: 13.22%
-Temperature 0.75 | AUPRC: 82.28% | FPR@TPR95: 12.95%
-Temperature 1.10 | AUPRC: 82.02% | FPR@TPR95: 12.80%
+[Normal Test] Dataset: RoadObsticle21 | Model: FineTuned | Method: max_entropy
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MAX_ENTROPY] AUPRC score: 63.739418040% | FPR@TPR95: 1.502119187%
 
-[Test] Dataset: RoadAnomaly21 | Model: FineTuned | Method: max_entropy
-AUPRC score: 81.24538230797555
-FPR@TPR95: 12.76488149714271
-Analyzing: saved_logits_finetuned_max_entropy
-Temperature 0.50 | AUPRC: 83.07% | FPR@TPR95: 13.22%
-Temperature 0.75 | AUPRC: 82.28% | FPR@TPR95: 12.95%
-Temperature 1.10 | AUPRC: 82.02% | FPR@TPR95: 12.80%
+[Normal Test] Dataset: RoadObsticle21 | Model: FineTuned | Method: rba
+[RBA] AUPRC score: 65.825095334% | FPR@TPR95: 33.245464434%
 
-[Test] Dataset: RoadAnomaly21 | Model: FineTuned | Method: rba
-AUPRC score: 72.89824520137614
-FPR@TPR95: 86.81220411126347
-Analyzing: saved_logits_finetuned_rba
-Temperature 0.50 | AUPRC: 83.07% | FPR@TPR95: 13.22%
-Temperature 0.75 | AUPRC: 82.28% | FPR@TPR95: 12.95%
-Temperature 1.10 | AUPRC: 82.02% | FPR@TPR95: 12.80%
+[Normal Test] Dataset: fs_static | Model: FineTuned | Method: msp
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MSP] AUPRC score: 85.026409914% | FPR@TPR95: 9.170172754%
+
+   [Temperature Test] Dataset: fs_static | Method: MSP(t=0.5)
+   Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+   [MSP] AUPRC score: 84.652767033% | FPR@TPR95: 9.370812516%
+   
+   [Temperature Test] Dataset: fs_static | Method: MSP(t=0.75)
+   Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+   [MSP] AUPRC score: 84.924801775% | FPR@TPR95: 8.893585046%
+   
+   [Temperature Test] Dataset: fs_static | Method: MSP(t=1.1)
+   [MSP] AUPRC score: 84.878606908% | FPR@TPR95: 9.151939709%
+
+[Normal Test] Dataset: fs_static | Model: FineTuned | Method: max_logit
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MAX_LOGIT] AUPRC score: 11.417663523% | FPR@TPR95: 23.544397438%
+
+[Normal Test] Dataset: fs_static | Model: FineTuned | Method: max_entropy
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[MAX_ENTROPY] AUPRC score: 16.552712381% | FPR@TPR95: 16.593756510%
+
+[Normal Test] Dataset: fs_static | Model: FineTuned | Method: rba
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[RBA] AUPRC score: 83.900451324% | FPR@TPR95: 4.656453350%
